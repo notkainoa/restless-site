@@ -13,7 +13,7 @@ const ogImage = new URL('/og.png', Astro.site);
 ---
 
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -22,26 +22,13 @@ const ogImage = new URL('/og.png', Astro.site);
     <link rel="canonical" href={canonical} />
     <link rel="preload" href={interLatin} as="font" type="font/woff2" crossorigin />
 
-    <!--
-      Theme: an explicit choice (stored) wins, otherwise follow the system.
-      Runs before first paint so there's no flash of the wrong theme.
-    -->
+    <!-- Content stays visible without JS; reveals only arm once this runs. -->
     <script is:inline>
-      (() => {
-        const root = document.documentElement;
-        root.classList.add('js');
-        let stored = null;
-        try {
-          stored = localStorage.getItem('theme');
-        } catch {}
-        const system = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-        root.dataset.theme = stored === 'light' || stored === 'dark' ? stored : system;
-      })();
+      document.documentElement.classList.add('js');
     </script>
 
-    <meta name="theme-color" content="#fbfaff" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0b0a13" media="(prefers-color-scheme: dark)" />
-    <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" content="#0b0a13" />
+    <meta name="color-scheme" content="dark" />
 
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />

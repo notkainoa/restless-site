@@ -14,7 +14,7 @@ const groups = [
         id: 'lidOpenAwake',
         label: 'Keep Awake',
         on: true,
-        desc: 'Prevents idle sleep and keeps the screen on, using IOKit power assertions, the same mechanism as <code class="token">caffeinate</code>. No password needed.',
+        desc: 'Prevents idle sleep and keeps the screen on, like <code class="token">caffeinate</code>. No password.',
       },
     ],
   },
@@ -27,19 +27,19 @@ const groups = [
         id: 'lidClosedAwake',
         label: 'Keep Awake',
         on: true,
-        desc: 'Keeps the Mac running with the lid shut, using <code class="token">pmset -a disablesleep 1</code>. When it’s off, closing the lid sleeps the Mac.',
+        desc: 'Keeps the Mac running with the lid closed. Off, closing the lid sleeps it.',
       },
       {
         id: 'sleepDisplay',
         label: 'Sleep Display',
         on: true,
-        desc: 'Turns the display off when the lid closes. Off, the screen keeps drawing at zero brightness, so a computer-use agent can still see it.',
+        desc: 'Turns the display off when the lid closes.',
       },
       {
         id: 'lockScreen',
         label: 'Lock Screen',
         on: true,
-        desc: 'Locks the Mac when the lid closes, since staying awake skips the usual lock-on-sleep.',
+        desc: 'Locks the Mac when the lid closes.',
       },
     ],
   },
@@ -52,7 +52,7 @@ const groups = [
         id: 'battery',
         label: 'Auto-off at 20%',
         on: true,
-        desc: 'On battery at 20% or less, Restless releases everything so the Mac can sleep normally.',
+        desc: 'On battery at 20% or less, lets the Mac sleep normally.',
       },
     ],
   },
@@ -62,8 +62,9 @@ const groups = [
 <div class="demo grid items-stretch gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:gap-5" data-demo data-lid="open" data-running="true">
   <!-- Stage: the laptop and the lid switch -->
   <div class="stage card relative flex flex-col overflow-hidden" data-reveal>
-    <div class="scene" aria-hidden="true">
-      <div class="laptop">
+    <div class="scene">
+      <button type="button" class="lid-hit" data-lid-toggle aria-label="Close the lid"></button>
+      <div class="laptop" aria-hidden="true">
         <div class="lid">
           <div class="lid-front">
             <div class="display">
@@ -99,7 +100,7 @@ const groups = [
         </div>
         <div class="lip"></div>
       </div>
-      <div class="floor"></div>
+      <div class="floor" aria-hidden="true"></div>
     </div>
 
     <div class="controls">
@@ -193,6 +194,31 @@ const groups = [
     padding: clamp(2.5rem, 7cqi, 4rem) 1rem clamp(4.5rem, 12cqi, 6.5rem);
     perspective: 1500px;
     perspective-origin: 50% -40%;
+  }
+
+  /* The whole laptop is the click target; it leans toward you on hover. */
+  .lid-hit {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: 1.5rem 1.5rem 0 0;
+    cursor: pointer;
+  }
+
+  .lid-hit:focus-visible {
+    outline-offset: -6px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .scene:has(.lid-hit:hover) .lid {
+      transform: rotateX(2deg);
+      transition-duration: 450ms;
+      transition-timing-function: var(--ease-out);
+    }
+
+    [data-lid='closed'] .scene:has(.lid-hit:hover) .lid {
+      transform: rotateX(-82deg);
+    }
   }
 
   .laptop {
@@ -479,13 +505,6 @@ const groups = [
   }
 
   .demo {
-    --alu-1: #e7e5f0;
-    --alu-2: #d6d3e3;
-    --alu-edge: #c3bfd4;
-    --key: #c9c5d9;
-  }
-
-  :global([data-theme='dark']) .demo {
     --alu-1: #2b2742;
     --alu-2: #221f35;
     --alu-edge: #3a3557;

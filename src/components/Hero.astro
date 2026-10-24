@@ -8,7 +8,7 @@ interface Props {
 }
 const { release } = Astro.props;
 
-// A quiet night sky behind the eye (dark theme only). Seeded so every build
+// A quiet night sky behind the eye. Seeded so every build
 // renders the same sky; about a third of the stars twinkle.
 let seed = 7;
 const rand = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
@@ -114,13 +114,7 @@ const stars = Array.from({ length: 46 }, (_, i) => ({
     height: 38rem;
     max-width: 80rem;
     margin-inline: auto;
-    opacity: 0;
-    transition: opacity 400ms ease;
     mask-image: radial-gradient(ellipse 60% 70% at 50% 30%, #000 30%, transparent 75%);
-  }
-
-  :global([data-theme='dark']) .stars {
-    opacity: 1;
   }
 
   .star {

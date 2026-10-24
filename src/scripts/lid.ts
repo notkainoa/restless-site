@@ -1,7 +1,9 @@
 // The "what it does" demo: a laptop running a long build over SSH, plus a
-// working copy of the Restless panel. Close the lid with Lid Closed → Keep
-// Awake on and the build keeps going; turn it off and the Mac sleeps, the
-// build pauses, and the SSH session drops, just like the real thing.
+// working copy of the Restless panel. It plays its own story once (close the
+// lid, keep building, open it again) so nobody has to click to get the point.
+// Visitors can still take over: click the laptop, or flip a switch. Turn off
+// Lid Closed → Keep Awake and the Mac sleeps, the build pauses, and the SSH
+// session drops, just like the real thing.
 //
 // The status card and menu bar glyph follow the app's own logic
 // (Sources/Panel/PanelViews.swift).
@@ -18,6 +20,10 @@ interface Settings {
 
 const TICK_MS = 700;
 const LID_MS = 1000;
+// The story: wait a beat after the demo scrolls into view, close the lid,
+// let the build run with it shut, then open it again.
+const STORY_CLOSE_MS = 1400;
+const STORY_OPEN_MS = 5600;
 const MAX_LINES = 13;
 const FILES = [
   'core/power.swift',
@@ -39,6 +45,7 @@ export function initLidDemo(root: HTMLElement) {
   const title = $<HTMLElement>('[data-status-title]');
   const sub = $<HTMLElement>('[data-status-sub]');
   const closedOn = $<HTMLElement>('[data-closed-on]');
+  const toggle = $<HTMLButtonElement>('[data-lid-toggle]');
   const radios = [...root.querySelectorAll<HTMLButtonElement>('[data-lid-set]')];
   const switches = [...root.querySelectorAll<HTMLButtonElement>('[data-setting]')];
   const groups = [...root.querySelectorAll<HTMLElement>('[data-group]')];
@@ -56,6 +63,9 @@ export function initLidDemo(root: HTMLElement) {
   let running = true;
   let sleptWhileClosed = false;
   let reconnecting = false;
+  // What the build did while the lid was shut, shown when it opens again.
+  let percentAtClose = 0;
+  let payoff = '';
   let percent = 0;
   let fileIndex = 0;
   let phase: 'connecting' | 'building' | 'done' = 'connecting';
@@ -143,6 +153,7 @@ export function initLidDemo(root: HTMLElement) {
     }
     closedOn.style.opacity = settings.lidClosedAwake ? '1' : '0';
 
+    toggle.setAttribute('aria-label', lid === 'open' ? 'Close the lid' : 'Open the lid');
     for (const r of radios) {
       const on = r.dataset.lidSet === lid;
       r.setAttribute('aria-checked', String(on));
@@ -164,7 +175,7 @@ export function initLidDemo(root: HTMLElement) {
     } else if (lid === 'closed') {
       setJobState('Still running with the lid closed');
     } else if (!reconnecting) {
-      setJobState('Running');
+      setJobState(payoff || 'Running');
     }
   };
 
@@ -223,9 +234,20 @@ export function initLidDemo(root: HTMLElement) {
   const setLid = (next: Lid) => {
     if (next === lid) return;
     lid = next;
-    if (lid === 'closed') closedAt = performance.now();
+    if (lid === 'closed') {
+      closedAt = performance.now();
+      percentAtClose = percent;
+      payoff = '';
+    } else if (running && phase === 'building' && percent > percentAtClose) {
+      payoff = `The build kept going with the lid closed: ${percentAtClose}% → ${percent}%`;
+    }
     update();
   };
+
+  toggle.addEventListener('click', () => {
+    interacted = true;
+    setLid(lid === 'open' ? 'closed' : 'open');
+  });
 
   radios.forEach((r, i) => {
     r.addEventListener('click', () => {
@@ -253,8 +275,7 @@ export function initLidDemo(root: HTMLElement) {
 
   document.addEventListener('visibilitychange', schedule);
 
-  // Play the point of the page once: shortly after the demo scrolls into
-  // view, close the lid. Visitors can take over at any time.
+  // Play the story once. Any click hands control to the visitor.
   let autoplayed = false;
   new IntersectionObserver(
     ([entry]) => {
@@ -262,9 +283,8 @@ export function initLidDemo(root: HTMLElement) {
       schedule();
       if (inView && !autoplayed) {
         autoplayed = true;
-        window.setTimeout(() => {
-          if (!interacted) setLid('closed');
-        }, 2200);
+        window.setTimeout(() => !interacted && setLid('closed'), STORY_CLOSE_MS);
+        window.setTimeout(() => !interacted && setLid('open'), STORY_OPEN_MS);
       }
     },
     { threshold: 0.35 },

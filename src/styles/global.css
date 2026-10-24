@@ -1,34 +1,11 @@
 @import 'tailwindcss';
 @import '@fontsource-variable/inter/opsz.css';
 
-@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
-
 /* ------------------------------------------------------------------------
-   Palette. Every purple here comes from the app icon:
-   lids #3a2e96 / #8370fa, moon #8873f1 / #a998fd, tile #faf8fe / #181246.
+   Palette. Dark only. Every purple here comes from the app icon's dark
+   variant: lids #8370fa, moon #a998fd, tile #251d6c -> #181246.
    ------------------------------------------------------------------------ */
 :root {
-  color-scheme: light;
-  --bg: #fbfaff;
-  --bg-tint: #f3f0fd;
-  --surface: #ffffff;
-  --surface-2: #f5f3fe;
-  --line: rgb(37 27 118 / 0.09);
-  --line-strong: rgb(37 27 118 / 0.16);
-  --ink: #16123a;
-  --ink-2: #4b4677;
-  --ink-3: #686392;
-  --accent: #3a2e96;
-  --accent-hover: #2f2483;
-  --accent-ink: #ffffff;
-  --moon: #8873f1;
-  --glow: rgb(136 115 241 / 0.28);
-  --switch-off: rgb(37 27 118 / 0.14);
-  --shadow-card: 0 1px 2px rgb(37 27 118 / 0.04), 0 8px 24px -12px rgb(37 27 118 / 0.12);
-  --shadow-float: 0 1px 1px rgb(37 27 118 / 0.04), 0 24px 48px -24px rgb(37 27 118 / 0.28);
-}
-
-[data-theme='dark'] {
   color-scheme: dark;
   --bg: #0b0a13;
   --bg-tint: #100e1c;
@@ -343,16 +320,3 @@
   }
 }
 
-/* Theme switch cross-fade (View Transitions). Gentle, never a flash. */
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation-duration: 280ms;
-  animation-timing-function: ease;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  ::view-transition-old(root),
-  ::view-transition-new(root) {
-    animation: none;
-  }
-}

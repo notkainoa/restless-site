@@ -1,6 +1,6 @@
 ---
-// The Restless icon as inline SVG, geometry copied from icon/restless-*.svg.
-// It follows the page theme (not the OS) and, when `live`, the moon iris is
+// The Restless icon as inline SVG, geometry and colors copied from
+// icon/restless-dark.svg (the site is dark only). When `live`, the moon iris is
 // split onto its own layer, clipped to the eye opening so it can look around
 // and slip under the lids like a real iris.
 interface Props {
@@ -22,12 +22,6 @@ const LOWER =
 const OPENING =
   'M181.17 520.76 C220.52 492.39 362.03 368.93 514.56 368.93 C681.15 368.93 838.72 520.44 843.21 520.44 C763.41 582.75 640.19 674.36 512.45 674.36 C425.37 674.36 320.7 633.91 181.17 520.76 Z';
 
-const vars = [
-  `--tile-l:url(#${p('tile-l')})`,
-  `--tile-d:url(#${p('tile-d')})`,
-  `--upper-l:url(#${p('upper-l')})`,
-  `--lower-l:url(#${p('lower-l')})`,
-].join(';');
 ---
 
 <svg
@@ -36,7 +30,6 @@ const vars = [
   width={size}
   height={size}
   class:list={['eyemark', className]}
-  style={vars}
   role={label ? 'img' : undefined}
   aria-label={label}
   aria-hidden={label ? undefined : 'true'}
@@ -44,30 +37,11 @@ const vars = [
   focusable="false"
 >
   <defs>
-    <linearGradient id={p('tile-l')} gradientUnits="userSpaceOnUse" x1="0" y1="96" x2="0" y2="928">
-      <stop offset="0" stop-color="#faf8fe"></stop>
-      <stop offset="1" stop-color="#ede9fe"></stop>
-    </linearGradient>
-    <linearGradient id={p('tile-d')} gradientUnits="userSpaceOnUse" x1="0" y1="96" x2="0" y2="928">
+    <linearGradient id={p('tile')} gradientUnits="userSpaceOnUse" x1="0" y1="96" x2="0" y2="928">
       <stop offset="0" stop-color="#251d6c"></stop>
       <stop offset="0.509" stop-color="#1e1755"></stop>
       <stop offset="1" stop-color="#181246"></stop>
     </linearGradient>
-    <radialGradient id={p('upper-l')} gradientUnits="userSpaceOnUse" cx="512" cy="520.43" r="340.21">
-      <stop offset="0" stop-color="#3a2e96"></stop>
-      <stop offset="0.44" stop-color="#3a2e96"></stop>
-      <stop offset="0.69" stop-color="#2e2382"></stop>
-      <stop offset="0.89" stop-color="#281e7a"></stop>
-      <stop offset="1" stop-color="#251b76"></stop>
-    </radialGradient>
-    <radialGradient id={p('lower-l')} gradientUnits="userSpaceOnUse" cx="512" cy="520.43" r="340.21">
-      <stop offset="0" stop-color="#322688"></stop>
-      <stop offset="0.44" stop-color="#322688"></stop>
-      <stop offset="0.62" stop-color="#2f2483"></stop>
-      <stop offset="0.71" stop-color="#2c217c"></stop>
-      <stop offset="0.89" stop-color="#281e79"></stop>
-      <stop offset="1" stop-color="#261c77"></stop>
-    </radialGradient>
     {
       live && (
         <clipPath id={p('opening')}>
@@ -77,9 +51,9 @@ const vars = [
     }
   </defs>
 
-  <rect class="em-tile" x="96" y="96" width="832" height="832" rx="196" ry="196"></rect>
-  <rect class="em-edge-in" x="98.5" y="98.5" width="827" height="827" rx="193.5" ry="193.5" fill="none" stroke-width="2"></rect>
-  <rect class="em-edge-out" x="96.75" y="96.75" width="830.5" height="830.5" rx="195.25" ry="195.25" fill="none" stroke-width="1.5"></rect>
+  <rect x="96" y="96" width="832" height="832" rx="196" ry="196" fill={`url(#${p('tile')})`}></rect>
+  <rect x="98.25" y="98.25" width="827.5" height="827.5" rx="193.75" ry="193.75" fill="none" stroke="#3e3896" stroke-width="3"></rect>
+  <rect x="96.75" y="96.75" width="830.5" height="830.5" rx="195.25" ry="195.25" fill="none" stroke="#100a2a" stroke-opacity="0.9" stroke-width="1.5"></rect>
 
   {
     live ? (
@@ -109,45 +83,13 @@ const vars = [
     display: block;
     overflow: visible;
   }
-  .em-tile {
-    fill: var(--tile-l);
-  }
-  .em-edge-in {
-    stroke: #ffffff;
-    stroke-opacity: 0.9;
-  }
-  .em-edge-out {
-    stroke: #e1dfee;
-  }
   .em-upper {
-    fill: var(--upper-l);
-  }
-  .em-lower {
-    fill: var(--lower-l);
-  }
-  .em-moon {
-    fill: #8873f1;
-  }
-
-  :global([data-theme='dark']) .em-tile {
-    fill: var(--tile-d);
-  }
-  :global([data-theme='dark']) .em-edge-in {
-    stroke: #3e3896;
-    stroke-opacity: 1;
-    stroke-width: 3;
-  }
-  :global([data-theme='dark']) .em-edge-out {
-    stroke: #100a2a;
-    stroke-opacity: 0.9;
-  }
-  :global([data-theme='dark']) .em-upper {
     fill: #8370fa;
   }
-  :global([data-theme='dark']) .em-lower {
+  .em-lower {
     fill: #8572fb;
   }
-  :global([data-theme='dark']) .em-moon {
+  .em-moon {
     fill: #a998fd;
   }
 

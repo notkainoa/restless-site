@@ -42,7 +42,7 @@ Absolute URLs for the canonical link and the Open Graph image come from `SITE_UR
 npm run assets
 ```
 
-That regenerates `favicon.svg` (which follows the light/dark color scheme), `favicon.ico`, `apple-touch-icon.png` and the 1200×630 `og.png`. The outputs are committed, so builds don't run this step.
+That regenerates `favicon.svg`, `favicon.ico`, `apple-touch-icon.png` and the 1200×630 `og.png`. The outputs are committed, so builds don't run this step.
 
 ## Layout
 
@@ -51,7 +51,7 @@ src/
   pages/index.astro        the page, section by section
   components/
     Hero.astro             hero with the live eye
-    EyeMark.astro          the icon as inline SVG (theme-aware; `live` adds the moving iris)
+    EyeMark.astro          the icon as inline SVG (`live` adds the moving iris)
     LidDemo.astro          3D laptop and a working copy of the Restless panel
     Details.astro          menu bar states and the smaller features
     Helper.astro           how lid-closed mode stays passwordless
@@ -60,15 +60,15 @@ src/
     eye.ts                 spring-driven gaze that follows the pointer
     lid.ts                 the demo's state, mirroring the app's panel logic
   lib/release.ts           build-time GitHub release lookup with fallback
-  styles/global.css        palette (from the icon's purples), type scale, buttons, reveals
+  styles/global.css        dark palette (from the icon's purples), type scale, buttons, reveals
 scripts/generate-assets.mjs  favicon, touch icon and OG image
 ```
 
 ## Motion and accessibility
 
-Motion is kept to a few purposeful pieces: the hero entrance, the eye (which opens on load, follows the pointer and glances around when idle), scroll reveals, the lid demo and the helper diagram. With `prefers-reduced-motion` the eye stays still, reveals become plain fades and the laptop switches state without animating. Everything also renders without JavaScript.
+Motion is kept to a few purposeful pieces: the hero entrance, the eye (which opens on load, follows the pointer and glances around when idle), scroll reveals, the lid demo and the helper diagram. The lid demo plays its story once by itself (close the lid, keep building, open it again), so visitors get the point without clicking anything; clicking the laptop or flipping a switch hands control to them. With `prefers-reduced-motion` the eye stays still, reveals become plain fades and the laptop switches state without animating. Everything also renders without JavaScript.
 
-The theme follows the system until the visitor picks one with the toggle; the choice is remembered in `localStorage`.
+The site is dark only, whatever the visitor's system setting. The palette uses the dark variant of the icon (`public/brand/restless-dark.svg`); the light SVG is kept alongside it for reference.
 
 ## Credits
 

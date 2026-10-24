@@ -21,10 +21,6 @@ const { release } = Astro.props;
         <Icon name="github" size={17} />
         GitHub
       </a>
-      <button type="button" class="nav-icon" data-theme-toggle aria-label="Switch theme">
-        <span class="theme-glyph theme-sun"><Icon name="sun" size={18} /></span>
-        <span class="theme-glyph theme-moon"><Icon name="moon" size={17} /></span>
-      </button>
       <a href={release.downloadUrl} class="btn btn-primary btn-sm ml-1">Download</a>
     </nav>
   </div>
@@ -68,107 +64,17 @@ const { release } = Astro.props;
       background-color 150ms ease;
   }
 
-  .nav-icon {
-    position: relative;
-    display: grid;
-    place-items: center;
-    width: 2.25rem;
-    height: 2.25rem;
-    border-radius: 999px;
-    color: var(--ink-2);
-    transition:
-      color 150ms ease,
-      background-color 150ms ease,
-      transform 160ms var(--ease-out);
-  }
-
-  .nav-icon:active {
-    transform: scale(0.94);
-  }
-
   @media (hover: hover) and (pointer: fine) {
-    .nav-link:hover,
-    .nav-icon:hover {
+    .nav-link:hover {
       color: var(--ink);
       background: var(--surface-2);
     }
   }
 
-  /* Show the theme you'd switch *to*. */
-  .theme-glyph {
-    position: absolute;
-    inset: 0;
-    display: grid;
-    place-items: center;
-    transition:
-      opacity 200ms ease,
-      transform 300ms var(--ease-out);
-  }
-
-  .theme-moon {
-    opacity: 0;
-    transform: rotate(-40deg) scale(0.8);
-  }
-
-  :global([data-theme='light']) .theme-sun {
-    opacity: 0;
-    transform: rotate(40deg) scale(0.8);
-  }
-
-  :global([data-theme='light']) .theme-moon {
-    opacity: 1;
-    transform: none;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .theme-glyph,
-    :global([data-theme='light']) .theme-sun {
-      transform: none;
-    }
-  }
 </style>
 
 <script>
   const root = document.documentElement;
-  const toggle = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
-  const system = window.matchMedia('(prefers-color-scheme: light)');
-
-  const label = () => {
-    const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
-    toggle?.setAttribute('aria-label', `Switch to ${next} theme`);
-  };
-
-  const apply = (theme: 'light' | 'dark') => {
-    const swap = () => {
-      root.dataset.theme = theme;
-      label();
-    };
-    // Cross-fade the whole page instead of snapping between palettes.
-    if (document.startViewTransition && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      document.startViewTransition(swap);
-    } else {
-      swap();
-    }
-  };
-
-  toggle?.addEventListener('click', () => {
-    const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
-    try {
-      localStorage.setItem('theme', next);
-    } catch {}
-    apply(next);
-  });
-
-  // Follow the system until the visitor makes a choice.
-  system.addEventListener('change', (e) => {
-    let stored = null;
-    try {
-      stored = localStorage.getItem('theme');
-    } catch {}
-    if (!stored) apply(e.matches ? 'light' : 'dark');
-  });
-
-  label();
 
   // Hairline under the header once the page has scrolled.
   const onScroll = () => root.classList.toggle('scrolled', window.scrollY > 8);

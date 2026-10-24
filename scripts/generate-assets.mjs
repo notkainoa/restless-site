@@ -14,7 +14,6 @@ const require = createRequire(import.meta.url);
 const root = new URL('../', import.meta.url);
 const pub = (p) => new URL(`public/${p}`, root);
 
-const light = await readFile(pub('brand/restless-light.svg'), 'utf8');
 const dark = await readFile(pub('brand/restless-dark.svg'), 'utf8');
 const layers = Object.fromEntries(
   await Promise.all(
@@ -42,14 +41,8 @@ const inner = (svg, prefix) =>
 const crop = (svg) => svg.replace('viewBox="0 0 1024 1024"', 'viewBox="96 96 832 832"');
 
 // ---------------------------------------------------------------- favicon.svg
-// Follows the browser's color scheme, like the app icon follows macOS.
-const faviconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="96 96 832 832">
-  <style>.d{display:none}@media (prefers-color-scheme:dark){.l{display:none}.d{display:inline}}</style>
-  <g class="l">${inner(light, 'l')}</g>
-  <g class="d">${inner(dark, 'd')}</g>
-</svg>
-`;
-await writeFile(pub('favicon.svg'), faviconSvg);
+// The dark icon, cropped to its tile, to match the always-dark site.
+await writeFile(pub('favicon.svg'), crop(dark).replace(/<!--[\s\S]*?-->\n?/g, ''));
 
 // ---------------------------------------------------------------- favicon.ico
 // PNG-in-ICO (supported everywhere that still asks for .ico).
