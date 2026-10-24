@@ -1,0 +1,787 @@
+---
+import Icon from './Icon.astro';
+import EyeMark from './EyeMark.astro';
+
+// Rows mirror the app's panel (Sources/Panel/PanelViews.swift); the copy is
+// the README's settings table, trimmed.
+const groups = [
+  {
+    key: 'open',
+    title: 'Lid Open',
+    icon: 'sun',
+    rows: [
+      {
+        id: 'lidOpenAwake',
+        label: 'Keep Awake',
+        on: true,
+        desc: 'Prevents idle sleep and keeps the screen on, using IOKit power assertions, the same mechanism as <code class="token">caffeinate</code>. No password needed.',
+      },
+    ],
+  },
+  {
+    key: 'closed',
+    title: 'Lid Closed',
+    icon: 'moon',
+    rows: [
+      {
+        id: 'lidClosedAwake',
+        label: 'Keep Awake',
+        on: true,
+        desc: 'Keeps the Mac running with the lid shut, using <code class="token">pmset -a disablesleep 1</code>. When it’s off, closing the lid sleeps the Mac.',
+      },
+      {
+        id: 'sleepDisplay',
+        label: 'Sleep Display',
+        on: true,
+        desc: 'Turns the display off when the lid closes. Off, the screen keeps drawing at zero brightness, so a computer-use agent can still see it.',
+      },
+      {
+        id: 'lockScreen',
+        label: 'Lock Screen',
+        on: true,
+        desc: 'Locks the Mac when the lid closes, since staying awake skips the usual lock-on-sleep.',
+      },
+    ],
+  },
+  {
+    key: 'battery',
+    title: 'Battery',
+    icon: 'battery',
+    rows: [
+      {
+        id: 'battery',
+        label: 'Auto-off at 20%',
+        on: true,
+        desc: 'On battery at 20% or less, Restless releases everything so the Mac can sleep normally.',
+      },
+    ],
+  },
+] as const;
+---
+
+<div class="demo grid items-stretch gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:gap-5" data-demo data-lid="open" data-running="true">
+  <!-- Stage: the laptop and the lid switch -->
+  <div class="stage card relative flex flex-col overflow-hidden" data-reveal>
+    <div class="scene" aria-hidden="true">
+      <div class="laptop">
+        <div class="lid">
+          <div class="lid-front">
+            <div class="display">
+              <div class="menubar">
+                <span class="mb-left">
+                  <span class="mb-dot"></span>
+                  <span class="mb-word w1"></span>
+                  <span class="mb-word w2"></span>
+                  <span class="mb-word w3"></span>
+                </span>
+                <span class="mb-right">
+                  <span class="mb-glyph" data-glyph="eye"><Icon name="eye" size={12} /></span>
+                  <span class="mb-glyph" data-glyph="eye-fill"><Icon name="eye-fill" size={12} /></span>
+                  <span class="mb-glyph" data-glyph="eye-slash"><Icon name="eye-slash" size={12} /></span>
+                  <span class="mb-batt"></span>
+                  <span class="mb-time">9:41</span>
+                </span>
+              </div>
+              <div class="term">
+                <div class="term-bar"><i></i><i></i><i></i><span>dev@build-box</span></div>
+                <div class="term-body" data-log></div>
+              </div>
+            </div>
+          </div>
+          <div class="lid-edge"></div>
+          <div class="lid-back">
+            <EyeMark id="lidback" size="22%" />
+          </div>
+        </div>
+        <div class="deck">
+          <div class="keys"></div>
+          <div class="pad"></div>
+        </div>
+        <div class="lip"></div>
+      </div>
+      <div class="floor"></div>
+    </div>
+
+    <div class="controls">
+      <div class="seg" role="radiogroup" aria-label="Lid position">
+        <span class="seg-thumb" aria-hidden="true"></span>
+        <button type="button" role="radio" aria-checked="true" data-lid-set="open">
+          <Icon name="sun" size={15} />
+          Lid open
+        </button>
+        <button type="button" role="radio" aria-checked="false" data-lid-set="closed" tabindex="-1">
+          <Icon name="moon" size={15} />
+          Lid closed
+        </button>
+      </div>
+
+      <div class="job" aria-hidden="true">
+        <span class="job-name"><Icon name="terminal" size={14} /> <code>make release</code></span>
+        <span class="job-track"><span class="job-fill" data-job-fill></span></span>
+        <span class="job-pct" data-job-pct>0%</span>
+      </div>
+      <p class="job-state" data-job-state aria-live="polite">Running</p>
+    </div>
+  </div>
+
+  <!-- The panel, as the app draws it -->
+  <div class="panel card" data-reveal style="--d:1">
+    <div class="status">
+      <span class="status-icon" aria-hidden="true">
+        <span class="mb-glyph" data-glyph="eye"><Icon name="eye" size={20} /></span>
+        <span class="mb-glyph" data-glyph="eye-fill"><Icon name="eye-fill" size={20} /></span>
+        <span class="mb-glyph" data-glyph="eye-slash"><Icon name="eye-slash" size={20} /></span>
+      </span>
+      <span class="min-w-0 flex-1" aria-live="polite">
+        <span class="status-title block" data-status-title>Awake with the lid closed</span>
+        <span class="status-sub block" data-status-sub>When shut: screen off, locked</span>
+      </span>
+      <span class="status-batt" aria-label="Battery 86%">86%</span>
+    </div>
+
+    {
+      groups.map((g) => (
+        <div class="group" data-group={g.key}>
+          <div class="group-head">
+            <Icon name={g.icon} size={15} />
+            <span>{g.title}</span>
+            {g.key === 'closed' && <span class="group-on" data-closed-on>On</span>}
+          </div>
+          <div class="group-body">
+            {g.rows.map((r) => (
+              <div class="row">
+                <div class="row-top">
+                  <span class="row-label" id={`lbl-${r.id}`}>{r.label}</span>
+                  <button
+                    type="button"
+                    class="switch"
+                    role="switch"
+                    aria-checked={r.on ? 'true' : 'false'}
+                    aria-labelledby={`grp-${g.key} lbl-${r.id}`}
+                    data-setting={r.id}
+                  >
+                    <span class="knob" />
+                  </button>
+                </div>
+                <p class="row-desc" set:html={r.desc} />
+              </div>
+            ))}
+          </div>
+          <span id={`grp-${g.key}`} hidden>{g.title}</span>
+        </div>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  /* -------------------------------------------------------------------- */
+  /* Stage                                                                 */
+  /* -------------------------------------------------------------------- */
+  .stage {
+    background:
+      radial-gradient(120% 70% at 50% 0%, color-mix(in srgb, var(--moon) 14%, transparent), transparent 70%),
+      var(--surface);
+  }
+
+  .scene {
+    container-type: inline-size;
+    position: relative;
+    flex: 1;
+    display: grid;
+    place-items: center;
+    padding: clamp(2.5rem, 7cqi, 4rem) 1rem clamp(4.5rem, 12cqi, 6.5rem);
+    perspective: 1500px;
+    perspective-origin: 50% -40%;
+  }
+
+  .laptop {
+    --w: min(78cqi, 25rem);
+    --h: calc(var(--w) * 0.64);
+    --t: calc(var(--w) * 0.014);
+    position: relative;
+    width: var(--w);
+    height: var(--h);
+    transform-style: preserve-3d;
+    transform: translateY(calc(var(--w) * -0.02));
+  }
+
+  .lid {
+    position: absolute;
+    inset: -2px 0 auto;
+    height: var(--h);
+    transform-origin: 50% 100%;
+    transform-style: preserve-3d;
+    transform: rotateX(10deg);
+    transition: transform 1000ms cubic-bezier(0.65, 0, 0.35, 1);
+  }
+
+  [data-lid='closed'] .lid {
+    transform: rotateX(-90deg);
+  }
+
+  .lid-front,
+  .lid-back {
+    position: absolute;
+    inset: 0;
+    border-radius: calc(var(--w) * 0.035) calc(var(--w) * 0.035) calc(var(--w) * 0.008) calc(var(--w) * 0.008);
+    backface-visibility: hidden;
+  }
+
+  .lid-front {
+    background: #07060d;
+    padding: calc(var(--w) * 0.022);
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.06) inset;
+  }
+
+  .lid-back {
+    transform: translateZ(calc(var(--t) * -1)) rotateY(180deg);
+    display: grid;
+    place-items: center;
+    background: linear-gradient(180deg, var(--alu-1), var(--alu-2));
+    box-shadow: 0 0 0 1px var(--alu-edge) inset;
+  }
+
+  .lid-back :global(.eyemark) {
+    opacity: 0.9;
+  }
+
+  .lid-edge {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: var(--t);
+    transform-origin: top;
+    transform: rotateX(-90deg);
+    background: var(--alu-edge);
+    border-radius: 2px;
+  }
+
+  .display {
+    position: relative;
+    height: 100%;
+    border-radius: calc(var(--w) * 0.012);
+    overflow: hidden;
+    background:
+      radial-gradient(70% 90% at 15% 110%, #8370fa 0%, transparent 60%),
+      radial-gradient(60% 80% at 95% 0%, #3a2e96 0%, transparent 70%),
+      linear-gradient(160deg, #251d6c, #181246 60%, #100b33);
+    transition: filter 500ms ease;
+  }
+
+  /* Asleep: the screen goes dark. */
+  [data-running='false'] .display {
+    filter: brightness(0.12) saturate(0.4);
+  }
+
+  .menubar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 7%;
+    padding-inline: 2.4%;
+    background: rgb(10 8 30 / 0.35);
+    color: #ece9ff;
+    font-size: calc(var(--w) * 0.024);
+  }
+
+  .mb-left,
+  .mb-right {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--w) * 0.018);
+  }
+
+  .mb-dot {
+    width: calc(var(--w) * 0.018);
+    height: calc(var(--w) * 0.018);
+    border-radius: 50%;
+    background: #ece9ff;
+    opacity: 0.85;
+  }
+
+  .mb-word {
+    height: calc(var(--w) * 0.012);
+    border-radius: 2px;
+    background: #ece9ff;
+    opacity: 0.45;
+  }
+  .w1 {
+    width: calc(var(--w) * 0.06);
+    opacity: 0.8;
+  }
+  .w2 {
+    width: calc(var(--w) * 0.035);
+  }
+  .w3 {
+    width: calc(var(--w) * 0.045);
+  }
+
+  .mb-right :global(svg) {
+    width: calc(var(--w) * 0.034);
+    height: calc(var(--w) * 0.034);
+  }
+
+  .mb-batt {
+    width: calc(var(--w) * 0.04);
+    height: calc(var(--w) * 0.019);
+    border-radius: 2px;
+    border: 1px solid rgb(236 233 255 / 0.7);
+    background: linear-gradient(90deg, rgb(236 233 255 / 0.85) 80%, transparent 80%) padding-box;
+    background-clip: content-box;
+    padding: 1px;
+  }
+
+  .mb-time {
+    font-size: calc(var(--w) * 0.024);
+    font-weight: 560;
+    letter-spacing: 0.01em;
+  }
+
+  /* Glyph state, shared by the menu bar and the panel's status card. */
+  .mb-glyph {
+    display: none;
+    line-height: 0;
+  }
+  [data-glyph-state='eye'] .mb-glyph[data-glyph='eye'],
+  [data-glyph-state='eye-fill'] .mb-glyph[data-glyph='eye-fill'],
+  [data-glyph-state='eye-slash'] .mb-glyph[data-glyph='eye-slash'] {
+    display: block;
+  }
+
+  .term {
+    position: absolute;
+    left: 9%;
+    right: 9%;
+    top: 16%;
+    bottom: 10%;
+    border-radius: calc(var(--w) * 0.014);
+    background: rgb(9 7 22 / 0.86);
+    box-shadow:
+      0 0 0 1px rgb(255 255 255 / 0.08) inset,
+      0 calc(var(--w) * 0.03) calc(var(--w) * 0.06) rgb(0 0 0 / 0.4);
+    overflow: hidden;
+  }
+
+  .term-bar {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--w) * 0.01);
+    height: calc(var(--w) * 0.05);
+    padding-inline: calc(var(--w) * 0.02);
+    border-bottom: 1px solid rgb(255 255 255 / 0.06);
+  }
+
+  .term-bar i {
+    width: calc(var(--w) * 0.014);
+    height: calc(var(--w) * 0.014);
+    border-radius: 50%;
+    background: rgb(255 255 255 / 0.18);
+  }
+
+  .term-bar span {
+    flex: 1;
+    margin-right: calc(var(--w) * 0.05);
+    text-align: center;
+    font-size: calc(var(--w) * 0.022);
+    color: rgb(236 233 255 / 0.5);
+  }
+
+  .term-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    height: calc(100% - var(--w) * 0.05);
+    padding: calc(var(--w) * 0.02) calc(var(--w) * 0.028);
+    font-family: var(--font-mono);
+    font-size: calc(var(--w) * 0.0255);
+    line-height: 1.55;
+    color: #d8d2ff;
+    white-space: pre;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(180deg, transparent, #000 22%);
+    mask-image: linear-gradient(180deg, transparent, #000 22%);
+  }
+
+  .term-body :global(.dim) {
+    color: rgb(216 210 255 / 0.5);
+  }
+  .term-body :global(.ok) {
+    color: #9be3b0;
+  }
+  .term-body :global(.err) {
+    color: #ff9c9c;
+  }
+  .term-body :global(.acc) {
+    color: #b9abff;
+  }
+
+  .deck {
+    position: absolute;
+    left: calc(var(--w) * -0.035);
+    right: calc(var(--w) * -0.035);
+    top: var(--h);
+    height: var(--h);
+    transform-origin: top;
+    transform: rotateX(90deg);
+    border-radius: calc(var(--w) * 0.01) calc(var(--w) * 0.01) calc(var(--w) * 0.035) calc(var(--w) * 0.035);
+    background: linear-gradient(180deg, var(--alu-2), var(--alu-1));
+    box-shadow: 0 0 0 1px var(--alu-edge) inset;
+  }
+
+  .keys {
+    position: absolute;
+    left: 9%;
+    right: 9%;
+    top: 7%;
+    height: 44%;
+    border-radius: calc(var(--w) * 0.008);
+    background:
+      repeating-linear-gradient(90deg, var(--key) 0 6.2%, transparent 6.2% 7.1%),
+      transparent;
+    -webkit-mask: repeating-linear-gradient(180deg, #000 0 14%, transparent 14% 17%);
+    mask: repeating-linear-gradient(180deg, #000 0 14%, transparent 14% 17%);
+  }
+
+  .pad {
+    position: absolute;
+    left: 33%;
+    right: 33%;
+    top: 58%;
+    bottom: 8%;
+    border-radius: calc(var(--w) * 0.01);
+    background: var(--key);
+    opacity: 0.6;
+  }
+
+  .lip {
+    position: absolute;
+    left: calc(var(--w) * -0.035);
+    right: calc(var(--w) * -0.035);
+    top: var(--h);
+    height: calc(var(--w) * 0.022);
+    transform: translateZ(var(--h));
+    border-radius: 0 0 calc(var(--w) * 0.03) calc(var(--w) * 0.03);
+    background: linear-gradient(180deg, var(--alu-edge), var(--alu-2));
+  }
+
+  .floor {
+    position: absolute;
+    left: 50%;
+    bottom: clamp(2.25rem, 7cqi, 3.5rem);
+    width: min(90cqi, 30rem);
+    height: 3rem;
+    translate: -50% 0;
+    background: radial-gradient(closest-side, rgb(0 0 0 / 0.35), transparent);
+    filter: blur(6px);
+    pointer-events: none;
+  }
+
+  .demo {
+    --alu-1: #e7e5f0;
+    --alu-2: #d6d3e3;
+    --alu-edge: #c3bfd4;
+    --key: #c9c5d9;
+  }
+
+  :global([data-theme='dark']) .demo {
+    --alu-1: #2b2742;
+    --alu-2: #221f35;
+    --alu-edge: #3a3557;
+    --key: #17152a;
+  }
+
+  /* -------------------------------------------------------------------- */
+  /* Controls under the laptop                                             */
+  /* -------------------------------------------------------------------- */
+  .controls {
+    display: grid;
+    gap: 0.9rem;
+    justify-items: center;
+    padding: 0 1.25rem 1.5rem;
+  }
+
+  .seg {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 4px;
+    border-radius: 999px;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+  }
+
+  .seg-thumb {
+    position: absolute;
+    top: 4px;
+    bottom: 4px;
+    left: 4px;
+    width: calc(50% - 4px);
+    border-radius: 999px;
+    background: var(--surface);
+    box-shadow:
+      0 1px 2px rgb(0 0 0 / 0.12),
+      0 0 0 1px var(--line-strong);
+    transition: transform 320ms var(--ease-out);
+  }
+
+  [data-lid='closed'] .seg-thumb {
+    transform: translateX(100%);
+  }
+
+  .seg button {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    height: 2.25rem;
+    padding-inline: 1.1rem;
+    border-radius: 999px;
+    font-size: 0.875rem;
+    font-weight: 560;
+    color: var(--ink-3);
+    transition:
+      color 150ms ease,
+      transform 160ms var(--ease-out);
+  }
+
+  .seg button:active {
+    transform: scale(0.97);
+  }
+
+  .seg button[aria-checked='true'] {
+    color: var(--ink);
+  }
+
+  .job {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    width: min(100%, 22rem);
+    font-size: 0.8125rem;
+    color: var(--ink-2);
+  }
+
+  .job-name {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    white-space: nowrap;
+  }
+
+  .job-name code {
+    font-size: 0.78rem;
+  }
+
+  .job-track {
+    position: relative;
+    flex: 1;
+    height: 4px;
+    border-radius: 999px;
+    background: var(--switch-off);
+    overflow: hidden;
+  }
+
+  .job-fill {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--accent);
+    transform-origin: left;
+    transform: scaleX(0);
+    transition:
+      transform 600ms linear,
+      background-color 300ms ease;
+  }
+
+  .job-pct {
+    width: 2.6rem;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+  }
+
+  .job-state {
+    font-size: 0.78rem;
+    color: var(--ink-3);
+    min-height: 1.2em;
+  }
+
+  [data-running='false'] .job-fill {
+    background: var(--ink-3);
+  }
+
+  /* -------------------------------------------------------------------- */
+  /* Panel                                                                 */
+  /* -------------------------------------------------------------------- */
+  .panel {
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .status {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.85rem 0.95rem;
+    border-radius: 1rem;
+    background: var(--surface-2);
+  }
+
+  .status-icon {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.7rem;
+    background: color-mix(in srgb, var(--moon) 18%, transparent);
+    color: var(--accent);
+  }
+
+  .status-title {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    letter-spacing: -0.012em;
+  }
+
+  .status-sub {
+    font-size: 0.8125rem;
+    color: var(--ink-3);
+  }
+
+  .status-batt {
+    font-size: 0.78rem;
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .group {
+    border-radius: 1rem;
+    border: 1px solid var(--line);
+    transition:
+      border-color 300ms ease,
+      background-color 300ms ease;
+  }
+
+  /* The group that applies to the current lid position. */
+  .group[data-active] {
+    border-color: color-mix(in srgb, var(--accent) 38%, transparent);
+    background: color-mix(in srgb, var(--moon) 6%, transparent);
+  }
+
+  .group-head {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.7rem 0.95rem 0.2rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--ink-2);
+  }
+
+  .group-on {
+    margin-left: auto;
+    font-size: 0.75rem;
+    font-weight: 560;
+    color: var(--accent);
+    transition: opacity 200ms ease;
+  }
+
+  .row {
+    padding: 0.5rem 0.95rem 0.7rem;
+  }
+
+  .row + .row {
+    border-top: 1px solid var(--line);
+  }
+
+  .row-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .row-label {
+    font-size: 0.9375rem;
+    font-weight: 560;
+    letter-spacing: -0.01em;
+  }
+
+  .row-desc {
+    margin-top: 0.2rem;
+    padding-right: 3.25rem;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: var(--ink-3);
+    text-wrap: pretty;
+  }
+
+  .row-desc :global(.token) {
+    font-size: 0.92em;
+    white-space: normal;
+  }
+
+  .switch {
+    position: relative;
+    flex: none;
+    width: 2.375rem;
+    height: 1.4rem;
+    border-radius: 999px;
+    background: var(--switch-off);
+    transition:
+      background-color 200ms ease,
+      transform 160ms var(--ease-out);
+  }
+
+  /* A bigger hit target than the drawn switch. */
+  .switch::before {
+    content: '';
+    position: absolute;
+    inset: -10px -8px;
+  }
+
+  .switch:active {
+    transform: scale(0.95);
+  }
+
+  .switch[aria-checked='true'] {
+    background: var(--accent);
+  }
+
+  .knob {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: calc(1.4rem - 4px);
+    height: calc(1.4rem - 4px);
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.25);
+    transition: transform 240ms var(--ease-out);
+  }
+
+  .switch[aria-checked='true'] .knob {
+    transform: translateX(calc(2.375rem - 1.4rem));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lid,
+    .seg-thumb,
+    .knob,
+    .job-fill {
+      transition-duration: 0ms;
+    }
+  }
+</style>
+
+<script>
+  import { initLidDemo } from '../scripts/lid';
+  const root = document.querySelector<HTMLElement>('[data-demo]');
+  if (root) initLidDemo(root);
+</script>
