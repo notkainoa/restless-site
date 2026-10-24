@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import interLatin from '@fontsource-variable/inter/files/inter-latin-opsz-normal.woff2?url';
 
 interface Props {
   title: string;
@@ -19,6 +20,7 @@ const ogImage = new URL('/og.png', Astro.site);
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    <link rel="preload" href={interLatin} as="font" type="font/woff2" crossorigin />
 
     <!--
       Theme: an explicit choice (stored) wins, otherwise follow the system.

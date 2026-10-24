@@ -55,6 +55,7 @@ export function initLidDemo(root: HTMLElement) {
   let closedAt = 0;
   let running = true;
   let sleptWhileClosed = false;
+  let reconnecting = false;
   let percent = 0;
   let fileIndex = 0;
   let phase: 'connecting' | 'building' | 'done' = 'connecting';
@@ -162,7 +163,7 @@ export function initLidDemo(root: HTMLElement) {
       setJobState(`Asleep. Paused at ${percent}%.`);
     } else if (lid === 'closed') {
       setJobState('Still running with the lid closed');
-    } else if (!sleptWhileClosed) {
+    } else if (!reconnecting) {
       setJobState('Running');
     }
   };
@@ -171,7 +172,8 @@ export function initLidDemo(root: HTMLElement) {
   const sleep = () => {
     if (!running) return;
     running = false;
-    sleptWhileClosed = true;
+    // A session that was already dropped has nothing left to break.
+    if (phase !== 'connecting') sleptWhileClosed = true;
     window.clearTimeout(phaseTimer);
     schedule();
     render();
@@ -185,18 +187,22 @@ export function initLidDemo(root: HTMLElement) {
     schedule();
     if (sleptWhileClosed) {
       // What you actually come back to after a Mac sleeps mid-session.
+      sleptWhileClosed = false;
+      reconnecting = true;
       phase = 'connecting';
       line('client_loop: send disconnect: Broken pipe', 'err');
       line('Connection to build-box closed.', 'dim');
       setJobState('The Mac slept, so the SSH session dropped. Starting over.');
       setPercent(0, false);
-      window.setTimeout(() => {
-        sleptWhileClosed = false;
-        if (running) {
-          connect();
-          describe();
-        }
+      phaseTimer = window.setTimeout(() => {
+        reconnecting = false;
+        connect();
+        describe();
       }, 1400);
+    } else if (phase === 'connecting') {
+      // Slept again before the session came back; pick up where it left off.
+      reconnecting = false;
+      connect();
     }
   };
 

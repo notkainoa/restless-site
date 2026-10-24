@@ -38,7 +38,7 @@ const stars = Array.from({ length: 46 }, (_, i) => ({
     </div>
   </div>
 
-  <div class="shell flex flex-col items-center pb-24 pt-14 text-center sm:pb-32 sm:pt-20">
+  <div class="shell flex flex-col items-center pb-10 pt-14 text-center sm:pb-24 sm:pt-20">
     <div data-enter style="--d:0">
       <div class="eye-wrap">
         <EyeMark id="hero" live size="100%" label="Restless app icon" />
@@ -58,8 +58,8 @@ const stars = Array.from({ length: 46 }, (_, i) => ({
       <Icon name="arrow-right" size={13} class="pill-arrow text-ink-3" />
     </a>
 
-    <h1 class="t-display mt-6 max-w-[16ch]" data-enter style="--d:3">
-      Keep your Mac awake, <span class="text-ink-3">even with the lid closed.</span>
+    <h1 class="t-display mt-6 max-w-[18ch]" data-enter style="--d:3">
+      Keep your Mac awake, <span class="block text-ink-3">even with the lid closed.</span>
     </h1>
 
     <p class="t-lead mt-6 max-w-[34rem]" data-enter style="--d:4">
@@ -85,6 +85,12 @@ const stars = Array.from({ length: 46 }, (_, i) => ({
 </section>
 
 <style>
+  /* Slide under the translucent header so the glow has no top edge. */
+  .hero {
+    margin-top: -4rem;
+    padding-top: 4rem;
+  }
+
   .eye-wrap {
     width: clamp(7.5rem, 22vw, 10.5rem);
     aspect-ratio: 1;

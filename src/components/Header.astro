@@ -31,21 +31,24 @@ const { release } = Astro.props;
 </header>
 
 <style>
+  /* Clear over the hero; the material and its edge appear only once
+     content scrolls underneath. */
   .site-header {
-    background: color-mix(in srgb, var(--bg) 72%, transparent);
-    backdrop-filter: blur(16px) saturate(160%);
-    -webkit-backdrop-filter: blur(16px) saturate(160%);
-    /* Edge appears only once content scrolls underneath. */
     border-bottom: 1px solid transparent;
-    transition: border-color 200ms ease;
+    transition:
+      background-color 200ms ease,
+      border-color 200ms ease;
   }
 
   :global(.scrolled) .site-header {
+    background: color-mix(in srgb, var(--bg) 72%, transparent);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
     border-bottom-color: var(--line);
   }
 
   @media (prefers-reduced-transparency: reduce) {
-    .site-header {
+    :global(.scrolled) .site-header {
       background: var(--bg);
       backdrop-filter: none;
     }
