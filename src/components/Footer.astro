@@ -1,0 +1,57 @@
+---
+import EyeMark from './EyeMark.astro';
+import { REPO_URL, RELEASES_URL } from '../lib/release';
+
+const links = [
+  { href: REPO_URL, label: 'GitHub' },
+  { href: RELEASES_URL, label: 'Releases' },
+  { href: `${REPO_URL}/blob/main/LICENSE`, label: 'License' },
+];
+---
+
+<footer class="border-t border-line">
+  <div class="shell grid gap-8 py-12 sm:py-14 md:grid-cols-[1fr_auto] md:items-start">
+    <div class="max-w-[34rem]">
+      <div class="flex items-center gap-2.5">
+        <EyeMark id="ftr" size={24} />
+        <span class="font-[620] tracking-[-0.02em]">Restless</span>
+        <span class="text-[0.8125rem] text-ink-3">by Kainoa Newton</span>
+      </div>
+      <p class="mt-4 text-[0.8125rem] leading-relaxed text-ink-3">
+        Restless began as a fork of{' '}
+        <a class="link text-ink-2" href="https://github.com/gustaferiksson/amped">Amped</a>{' '}
+        by Gustaf Eriksson. The panel’s design and some of its code are adapted from{' '}
+        <a class="link text-ink-2" href="https://github.com/robinebers/openusage">OpenUsage</a>. Both are MIT
+        licensed. Restless isn’t affiliated with either project.
+      </p>
+    </div>
+
+    <nav aria-label="Project" class="flex flex-wrap gap-x-6 gap-y-2 md:justify-end">
+      {
+        links.map((l) => (
+          <a href={l.href} class="footer-link">
+            {l.label}
+          </a>
+        ))
+      }
+    </nav>
+  </div>
+  <div class="shell pb-10 text-[0.75rem] text-ink-3">
+    © 2026 Kainoa Newton. Released under the MIT License.
+  </div>
+</footer>
+
+<style>
+  .footer-link {
+    font-size: 0.875rem;
+    font-weight: 520;
+    color: var(--ink-2);
+    transition: color 150ms ease;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .footer-link:hover {
+      color: var(--ink);
+    }
+  }
+</style>

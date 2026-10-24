@@ -1,0 +1,237 @@
+---
+import Icon from './Icon.astro';
+import EyeMark from './EyeMark.astro';
+import Chevron from './Chevron.astro';
+
+const REPO_HELPER = 'https://github.com/notkainoa/restless#how-lid-closed-mode-stays-passwordless';
+---
+
+<div class="grid gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16">
+  <div data-reveal>
+    <p class="t-label">How it stays passwordless</p>
+    <h2 class="t-title mt-3">Approve once. <span class="text-ink-3">Never type your password again.</span></h2>
+    <p class="t-lead mt-5">
+      Keeping a Mac awake with the lid shut means flipping the system <code class="token">disablesleep</code>
+      flag, which only <code class="token">root</code> can do. Restless hands that one job to a small,
+      privileged helper.
+    </p>
+
+    <ol class="steps mt-8">
+      <li>
+        <span class="step-n">1</span>
+        <span>The first time you turn on <b>Lid Closed <Chevron /> Keep Awake</b>, Restless offers to set the helper up.</span>
+      </li>
+      <li>
+        <span class="step-n">2</span>
+        <span>
+          Approve “Restless” once in <b>System Settings <Chevron /> General <Chevron /> Login Items &amp; Extensions</b>.
+        </span>
+      </li>
+      <li>
+        <span class="step-n">3</span>
+        <span>From then on the switch never asks for a password, and Auto-off at 20% can turn lid-closed mode off while you’re away.</span>
+      </li>
+    </ol>
+  </div>
+
+  <div class="flex flex-col gap-4" data-reveal style="--d:1">
+    <div class="flow card" data-flow>
+      <div class="node">
+        <EyeMark id="flow" size={40} />
+        <div>
+          <p class="node-title">Restless.app</p>
+          <p class="node-sub">The menu bar app</p>
+        </div>
+      </div>
+
+      <div class="wire" aria-hidden="true">
+        <span class="wire-line"><span class="pulse"></span></span>
+        <span class="wire-label"><Icon name="lock" size={12} /> XPC, same Developer ID team only</span>
+      </div>
+
+      <div class="node">
+        <span class="node-icon"><Icon name="shield" size={20} /></span>
+        <div>
+          <p class="node-title">Privileged helper</p>
+          <p class="node-sub">A <code>root</code> LaunchDaemon inside the app bundle</p>
+        </div>
+      </div>
+
+      <div class="wire" aria-hidden="true">
+        <span class="wire-line"><span class="pulse" style="animation-delay: 0.9s"></span></span>
+        <span class="wire-label">Does exactly one thing</span>
+      </div>
+
+      <div class="node node-cmd">
+        <span class="node-icon"><Icon name="terminal" size={20} /></span>
+        <code class="cmd">pmset -a disablesleep 1</code>
+      </div>
+    </div>
+
+    <div class="aside card">
+      <p class="text-[0.9375rem] font-[600] tracking-[-0.01em]">Rather not install a helper?</p>
+      <p class="t-body mt-1.5">
+        Choose <b class="font-[580] text-ink">Just This Time</b>. The Mac stays awake now after a single password
+        prompt, and nothing is installed. You can remove the helper anytime from the same System Settings pane.
+      </p>
+      <a href={REPO_HELPER} class="link mt-3 inline-flex items-center gap-1 text-[0.875rem] font-[540]">
+        Read how the helper works
+        <Icon name="arrow-up-right" size={14} />
+      </a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .steps {
+    display: grid;
+    gap: 1.1rem;
+    counter-reset: step;
+  }
+
+  .steps li {
+    display: flex;
+    gap: 0.9rem;
+    font-size: 0.96875rem;
+    line-height: 1.55;
+    color: var(--ink-2);
+  }
+
+  .steps b {
+    font-weight: 580;
+    color: var(--ink);
+  }
+
+  .step-n {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 1.6rem;
+    height: 1.6rem;
+    margin-top: -0.05rem;
+    border-radius: 50%;
+    font-size: 0.78rem;
+    font-weight: 620;
+    color: var(--accent);
+    background: color-mix(in srgb, var(--moon) 16%, transparent);
+  }
+
+  .flow {
+    display: grid;
+    padding: clamp(1.25rem, 3vw, 1.75rem);
+    background:
+      radial-gradient(90% 60% at 100% 0%, color-mix(in srgb, var(--moon) 10%, transparent), transparent 70%),
+      var(--surface);
+  }
+
+  .node {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 0.85rem 1rem;
+    border-radius: 1rem;
+    background: var(--surface-2);
+    box-shadow: 0 0 0 1px var(--line);
+  }
+
+  .node-icon {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.75rem;
+    color: var(--accent);
+    background: var(--surface);
+    box-shadow: 0 0 0 1px var(--line);
+  }
+
+  .node-title {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    letter-spacing: -0.012em;
+  }
+
+  .node-sub {
+    font-size: 0.8125rem;
+    color: var(--ink-3);
+  }
+
+  .node-sub code {
+    font-size: 0.78rem;
+  }
+
+  .cmd {
+    font-size: 0.875rem;
+    color: var(--ink);
+    overflow-wrap: anywhere;
+  }
+
+  .wire {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    height: 3.25rem;
+    padding-left: calc(1rem + 1.25rem - 1px);
+  }
+
+  .wire-line {
+    position: relative;
+    width: 2px;
+    height: 100%;
+    border-radius: 2px;
+    background: var(--line-strong);
+    overflow: hidden;
+  }
+
+  /* A message travelling down the wire. Composite-only: translateY of a
+     full-height track, so the dot's position is relative to the wire. */
+  .pulse {
+    position: absolute;
+    inset: 0;
+    transform: translateY(-100%);
+  }
+
+  .pulse::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1.25rem;
+    border-radius: 2px;
+    background: linear-gradient(180deg, transparent, var(--accent));
+  }
+
+  :global(.is-in) .flow .pulse {
+    animation: travel 3.6s cubic-bezier(0.77, 0, 0.175, 1) infinite;
+  }
+
+  @keyframes travel {
+    0% {
+      transform: translateY(-100%);
+    }
+    30%,
+    100% {
+      transform: translateY(100%);
+    }
+  }
+
+  .wire-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.78rem;
+    color: var(--ink-3);
+  }
+
+  .aside {
+    padding: 1.35rem 1.5rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(.is-in) .flow .pulse {
+      animation: none;
+    }
+  }
+</style>

@@ -1,0 +1,55 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import LidDemo from '../components/LidDemo.astro';
+import Details from '../components/Details.astro';
+import Helper from '../components/Helper.astro';
+import Trust from '../components/Trust.astro';
+import Download from '../components/Download.astro';
+import Footer from '../components/Footer.astro';
+import { getLatestRelease } from '../lib/release';
+
+const release = await getLatestRelease();
+---
+
+<Base
+  title="Restless: keep your Mac awake, even with the lid closed"
+  description="A small, fully native macOS menu bar app that keeps your Mac awake, even with the lid closed. SSH sessions, downloads, builds and AI agents keep running."
+>
+  <Header release={release} />
+
+  <main id="main">
+    <Hero release={release} />
+
+    <section id="what-it-does" class="shell scroll-mt-20 py-20 sm:py-28" aria-labelledby="what-title">
+      <div class="mx-auto mb-12 max-w-[40rem] text-center sm:mb-14" data-reveal>
+        <p class="t-label">What it does</p>
+        <h2 id="what-title" class="t-title mt-3">
+          Lid open or lid closed, <span class="text-ink-3">your Mac stays up.</span>
+        </h2>
+        <p class="t-lead mt-5">
+          Restless groups its settings by lid position, just like its panel. Try it: close the lid, then
+          turn off Keep Awake and close it again.
+        </p>
+      </div>
+
+      <LidDemo />
+      <Details />
+    </section>
+
+    <section id="passwordless" class="shell scroll-mt-20 py-20 sm:py-28" aria-label="How it stays passwordless">
+      <Helper />
+    </section>
+
+    <section class="shell py-8 sm:py-12" aria-label="Trust and requirements">
+      <Trust />
+    </section>
+
+    <section id="download" class="shell scroll-mt-20 pb-24 pt-16 sm:pb-32 sm:pt-24" aria-label="Download">
+      <Download release={release} />
+    </section>
+  </main>
+
+  <Footer />
+</Base>

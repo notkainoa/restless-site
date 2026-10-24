@@ -1,0 +1,96 @@
+---
+import Icon, { type IconName } from './Icon.astro';
+
+const items: { icon: IconName; title: string; body: string }[] = [
+  {
+    icon: 'display',
+    title: 'Steps aside for a monitor',
+    body: 'Sleep Display and Lock Screen only affect the laptop’s own screen. With an external display connected, closing the lid behaves exactly as macOS normally does.',
+  },
+  {
+    icon: 'power',
+    title: 'Never a surprise',
+    body: 'Restless starts with keep-awake off, so it never blocks sleep or asks for a password on launch. Quitting always restores normal sleep.',
+  },
+  {
+    icon: 'login',
+    title: 'Launch at Login',
+    body: 'Registers as a login item with SMAppService, so it’s there every time you log in.',
+  },
+  {
+    icon: 'refresh',
+    title: 'Updates itself',
+    body: 'Sparkle checks for new releases in the background. Turn that off in Settings, or check right away.',
+  },
+];
+
+const states: { icon: IconName; token: string; label: string }[] = [
+  { icon: 'eye-slash', token: 'eye.slash', label: 'Sleep is allowed' },
+  { icon: 'eye', token: 'eye', label: 'Awake while the lid is open' },
+  { icon: 'eye-fill', token: 'eye.fill', label: 'Awake even with the lid closed' },
+];
+---
+
+<div class="mt-4 grid gap-4 md:grid-cols-2 lg:mt-5 lg:grid-cols-4 lg:gap-5">
+  <div class="card grid gap-6 p-6 md:col-span-2 lg:col-span-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,2.4fr)] lg:items-center lg:gap-10 lg:p-7" data-reveal>
+    <div>
+      <h3 class="text-[1.0625rem] font-[600] tracking-[-0.015em]">The menu bar, at a glance</h3>
+      <p class="t-body mt-1.5">One icon tells you what your Mac will do when you walk away.</p>
+    </div>
+    <ul class="grid gap-2 sm:grid-cols-3">
+      {
+        states.map((s) => (
+          <li class="state">
+            <span class="state-glyph">
+              <Icon name={s.icon} size={20} />
+            </span>
+            <span class="min-w-0">
+              <span class="block text-[0.9375rem] font-[540] leading-snug tracking-[-0.01em]">{s.label}</span>
+              <code class="mt-0.5 block text-[0.75rem] text-ink-3">{s.token}</code>
+            </span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  {
+    items.map((item, i) => (
+      <div class="card p-6" data-reveal style={`--d:${i + 1}`}>
+        <span class="detail-icon">
+          <Icon name={item.icon} size={18} />
+        </span>
+        <h3 class="mt-4 text-[1.0625rem] font-[600] tracking-[-0.015em]">{item.title}</h3>
+        <p class="t-body mt-1.5">{item.body}</p>
+      </div>
+    ))
+  }
+</div>
+
+<style>
+  .state {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.8rem 0.9rem;
+    border-radius: 1rem;
+    background: var(--surface-2);
+  }
+
+  .state-glyph,
+  .detail-icon {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.7rem;
+    color: var(--accent);
+    background: color-mix(in srgb, var(--moon) 16%, transparent);
+  }
+
+  .state-glyph {
+    background: var(--surface);
+    box-shadow: 0 0 0 1px var(--line);
+  }
+</style>
