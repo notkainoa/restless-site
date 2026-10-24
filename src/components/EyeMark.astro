@@ -1,0 +1,196 @@
+---
+// The Restless icon as inline SVG, geometry copied from icon/restless-*.svg.
+// It follows the page theme (not the OS) and, when `live`, the moon iris is
+// split onto its own layer, clipped to the eye opening so it can look around
+// and slip under the lids like a real iris.
+interface Props {
+  id: string;
+  size?: number | string;
+  live?: boolean;
+  class?: string;
+  label?: string;
+}
+
+const { id, size = 32, live = false, class: className, label } = Astro.props;
+const p = (name: string) => `${id}-${name}`;
+
+const UPPER =
+  'M178.23 520.43 C197.2 499.55 324.84 284.19 517.59 284.19 C610.51 284.19 718.4 330.45 845.77 520.44 L843.21 520.44 C838.72 520.44 681.15 368.93 514.56 368.93 C362.03 368.93 220.52 492.39 181.17 520.76 Z';
+const LOWER =
+  'M178.23 520.43 C282.55 669.47 381.43 757.45 511.39 757.45 C661.56 757.45 769.53 627.67 845.77 520.44 L845.77 519.44 L843.21 519.44 L843.21 520.44 C763.41 582.75 640.19 674.36 512.45 674.36 C425.37 674.36 320.7 633.91 181.17 520.76 L181.17 519.76 L178.23 519.43 Z';
+// The opening between the lids: the inner edges of both lid shapes.
+const OPENING =
+  'M181.17 520.76 C220.52 492.39 362.03 368.93 514.56 368.93 C681.15 368.93 838.72 520.44 843.21 520.44 C763.41 582.75 640.19 674.36 512.45 674.36 C425.37 674.36 320.7 633.91 181.17 520.76 Z';
+
+const vars = [
+  `--tile-l:url(#${p('tile-l')})`,
+  `--tile-d:url(#${p('tile-d')})`,
+  `--upper-l:url(#${p('upper-l')})`,
+  `--lower-l:url(#${p('lower-l')})`,
+].join(';');
+---
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="96 96 832 832"
+  width={size}
+  height={size}
+  class:list={['eyemark', className]}
+  style={vars}
+  role={label ? 'img' : undefined}
+  aria-label={label}
+  aria-hidden={label ? undefined : 'true'}
+  data-eye={live ? '' : undefined}
+  focusable="false"
+>
+  <defs>
+    <linearGradient id={p('tile-l')} gradientUnits="userSpaceOnUse" x1="0" y1="96" x2="0" y2="928">
+      <stop offset="0" stop-color="#faf8fe"></stop>
+      <stop offset="1" stop-color="#ede9fe"></stop>
+    </linearGradient>
+    <linearGradient id={p('tile-d')} gradientUnits="userSpaceOnUse" x1="0" y1="96" x2="0" y2="928">
+      <stop offset="0" stop-color="#251d6c"></stop>
+      <stop offset="0.509" stop-color="#1e1755"></stop>
+      <stop offset="1" stop-color="#181246"></stop>
+    </linearGradient>
+    <radialGradient id={p('upper-l')} gradientUnits="userSpaceOnUse" cx="512" cy="520.43" r="340.21">
+      <stop offset="0" stop-color="#3a2e96"></stop>
+      <stop offset="0.44" stop-color="#3a2e96"></stop>
+      <stop offset="0.69" stop-color="#2e2382"></stop>
+      <stop offset="0.89" stop-color="#281e7a"></stop>
+      <stop offset="1" stop-color="#251b76"></stop>
+    </radialGradient>
+    <radialGradient id={p('lower-l')} gradientUnits="userSpaceOnUse" cx="512" cy="520.43" r="340.21">
+      <stop offset="0" stop-color="#322688"></stop>
+      <stop offset="0.44" stop-color="#322688"></stop>
+      <stop offset="0.62" stop-color="#2f2483"></stop>
+      <stop offset="0.71" stop-color="#2c217c"></stop>
+      <stop offset="0.89" stop-color="#281e79"></stop>
+      <stop offset="1" stop-color="#261c77"></stop>
+    </radialGradient>
+    {
+      live && (
+        <clipPath id={p('opening')}>
+          <path d={OPENING} />
+        </clipPath>
+      )
+    }
+  </defs>
+
+  <rect class="em-tile" x="96" y="96" width="832" height="832" rx="196" ry="196"></rect>
+  <rect class="em-edge-in" x="98.5" y="98.5" width="827" height="827" rx="193.5" ry="193.5" fill="none" stroke-width="2"></rect>
+  <rect class="em-edge-out" x="96.75" y="96.75" width="830.5" height="830.5" rx="195.25" ry="195.25" fill="none" stroke-width="1.5"></rect>
+
+  {
+    live ? (
+      <>
+        <g clip-path={`url(#${p('opening')})`}>
+          <g class="em-iris" data-eye-iris>
+            <circle class="em-moon" cx="511.31" cy="522.4" r="119.5" />
+          </g>
+        </g>
+        <g class="em-lids" data-eye-lids>
+          <path class="em-lower" d={LOWER} />
+          <path class="em-upper" d={UPPER} />
+        </g>
+      </>
+    ) : (
+      <>
+        <path class="em-lower" d={LOWER} />
+        <path class="em-upper" d={UPPER} />
+        <circle class="em-moon" cx="511.31" cy="522.4" r="119.5" />
+      </>
+    )
+  }
+</svg>
+
+<style>
+  .eyemark {
+    display: block;
+    overflow: visible;
+  }
+  .em-tile {
+    fill: var(--tile-l);
+  }
+  .em-edge-in {
+    stroke: #ffffff;
+    stroke-opacity: 0.9;
+  }
+  .em-edge-out {
+    stroke: #e1dfee;
+  }
+  .em-upper {
+    fill: var(--upper-l);
+  }
+  .em-lower {
+    fill: var(--lower-l);
+  }
+  .em-moon {
+    fill: #8873f1;
+  }
+
+  :global([data-theme='dark']) .em-tile {
+    fill: var(--tile-d);
+  }
+  :global([data-theme='dark']) .em-edge-in {
+    stroke: #3e3896;
+    stroke-opacity: 1;
+    stroke-width: 3;
+  }
+  :global([data-theme='dark']) .em-edge-out {
+    stroke: #100a2a;
+    stroke-opacity: 0.9;
+  }
+  :global([data-theme='dark']) .em-upper {
+    fill: #8370fa;
+  }
+  :global([data-theme='dark']) .em-lower {
+    fill: #8572fb;
+  }
+  :global([data-theme='dark']) .em-moon {
+    fill: #a998fd;
+  }
+
+  /* Live eye: lids part on load, then the moon rises into place. */
+  .em-lids {
+    transform-origin: 512px 520px;
+    transform-box: view-box;
+  }
+
+  :global(.js) [data-eye] .em-lids {
+    animation: eye-open 820ms cubic-bezier(0.23, 1, 0.32, 1) 160ms both;
+  }
+
+  :global(.js) [data-eye] .em-moon {
+    transform-origin: 511px 522px;
+    transform-box: view-box;
+    animation: moon-rise 700ms cubic-bezier(0.23, 1, 0.32, 1) 420ms both;
+  }
+
+  @keyframes eye-open {
+    from {
+      transform: scaleY(0.06);
+    }
+    to {
+      transform: scaleY(1);
+    }
+  }
+
+  @keyframes moon-rise {
+    from {
+      opacity: 0;
+      transform: translateY(46px) scale(0.92);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(.js) [data-eye] .em-lids,
+    :global(.js) [data-eye] .em-moon {
+      animation: none;
+    }
+  }
+</style>

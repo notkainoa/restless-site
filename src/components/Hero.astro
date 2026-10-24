@@ -1,0 +1,193 @@
+---
+import EyeMark from './EyeMark.astro';
+import Icon from './Icon.astro';
+import { REPO_URL, type Release } from '../lib/release';
+
+interface Props {
+  release: Release;
+}
+const { release } = Astro.props;
+
+// A quiet night sky behind the eye (dark theme only). Seeded so every build
+// renders the same sky; about a third of the stars twinkle.
+let seed = 7;
+const rand = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
+const stars = Array.from({ length: 46 }, (_, i) => ({
+  x: rand() * 100,
+  y: rand() * 100,
+  s: rand() < 0.15 ? 2 : 1,
+  o: 0.25 + rand() * 0.5,
+  twinkle: i % 3 === 0,
+  dur: 3 + rand() * 4,
+  delay: rand() * -6,
+}));
+---
+
+<section id="top" class="hero relative isolate overflow-hidden">
+  <div class="sky pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+    <div class="glow"></div>
+    <div class="stars">
+      {
+        stars.map((s) => (
+          <span
+            class:list={['star', { twinkle: s.twinkle }]}
+            style={`left:${s.x.toFixed(2)}%;top:${s.y.toFixed(2)}%;--s:${s.s}px;--o:${s.o.toFixed(2)};--dur:${s.dur.toFixed(2)}s;--delay:${s.delay.toFixed(2)}s`}
+          />
+        ))
+      }
+    </div>
+  </div>
+
+  <div class="shell flex flex-col items-center pb-24 pt-14 text-center sm:pb-32 sm:pt-20">
+    <div data-enter style="--d:0">
+      <div class="eye-wrap">
+        <EyeMark id="hero" live size="100%" label="Restless app icon" />
+      </div>
+    </div>
+
+    <a
+      href={release.notesUrl}
+      class="pill mt-9 sm:mt-10"
+      data-enter
+      style="--d:2"
+    >
+      <span class="pill-dot" aria-hidden="true"></span>
+      Version {release.version}
+      <span class="text-ink-3" aria-hidden="true">·</span>
+      <span class="text-ink-2">Release notes</span>
+      <Icon name="arrow-right" size={13} class="pill-arrow text-ink-3" />
+    </a>
+
+    <h1 class="t-display mt-6 max-w-[16ch]" data-enter style="--d:3">
+      Keep your Mac awake, <span class="text-ink-3">even with the lid closed.</span>
+    </h1>
+
+    <p class="t-lead mt-6 max-w-[34rem]" data-enter style="--d:4">
+      A small, fully native menu bar app for macOS. Close the lid and SSH sessions, downloads,
+      builds and AI agents keep running.
+    </p>
+
+    <div class="mt-9 flex w-full flex-col items-center justify-center gap-3 sm:w-auto sm:flex-row" data-enter style="--d:5">
+      <a href={release.downloadUrl} class="btn btn-primary w-full sm:w-auto">
+        <Icon name="download" size={18} class="nudge-down" />
+        Download for macOS
+      </a>
+      <a href={REPO_URL} class="btn btn-ghost w-full sm:w-auto">
+        <Icon name="github" size={18} />
+        View on GitHub
+      </a>
+    </div>
+
+    <p class="mt-5 text-[0.8125rem] leading-relaxed text-ink-3" data-enter style="--d:6">
+      Free and open source. Requires macOS 26 or newer.
+    </p>
+  </div>
+</section>
+
+<style>
+  .eye-wrap {
+    width: clamp(7.5rem, 22vw, 10.5rem);
+    aspect-ratio: 1;
+    filter: drop-shadow(0 24px 40px var(--glow)) drop-shadow(0 2px 4px rgb(16 10 42 / 0.25));
+  }
+
+  .glow {
+    position: absolute;
+    left: 50%;
+    top: -14rem;
+    width: min(64rem, 140vw);
+    aspect-ratio: 1.6;
+    translate: -50% 0;
+    background: radial-gradient(closest-side, var(--glow), transparent 72%);
+    opacity: 0.75;
+  }
+
+  .stars {
+    position: absolute;
+    inset: 0 0 auto;
+    height: 38rem;
+    max-width: 80rem;
+    margin-inline: auto;
+    opacity: 0;
+    transition: opacity 400ms ease;
+    mask-image: radial-gradient(ellipse 60% 70% at 50% 30%, #000 30%, transparent 75%);
+  }
+
+  :global([data-theme='dark']) .stars {
+    opacity: 1;
+  }
+
+  .star {
+    position: absolute;
+    width: var(--s);
+    height: var(--s);
+    border-radius: 50%;
+    background: #d9d2ff;
+    opacity: var(--o);
+  }
+
+  .star.twinkle {
+    animation: twinkle var(--dur) ease-in-out var(--delay) infinite;
+  }
+
+  @keyframes twinkle {
+    0%,
+    100% {
+      opacity: var(--o);
+    }
+    50% {
+      opacity: 0.08;
+    }
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    height: 2rem;
+    padding-inline: 0.85rem 0.75rem;
+    border-radius: 999px;
+    border: 1px solid var(--line-strong);
+    background: color-mix(in srgb, var(--surface) 60%, transparent);
+    font-size: 0.8125rem;
+    font-weight: 520;
+    color: var(--ink);
+    transition:
+      border-color 150ms ease,
+      background-color 150ms ease;
+  }
+
+  .pill-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--moon);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--moon) 22%, transparent);
+  }
+
+  .pill :global(.pill-arrow) {
+    transition: transform 200ms var(--ease-out);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .pill:hover {
+      border-color: color-mix(in srgb, var(--accent) 35%, var(--line-strong));
+      background: var(--surface-2);
+    }
+    .pill:hover :global(.pill-arrow) {
+      transform: translateX(2px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .star.twinkle {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  import { initEye } from '../scripts/eye';
+  const eye = document.querySelector<SVGSVGElement>('[data-eye]');
+  if (eye) initEye(eye);
+</script>

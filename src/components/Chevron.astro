@@ -1,0 +1,18 @@
+---
+// Inline "→" for menu paths like Lid Closed → Keep Awake. Inter's latin
+// subset has no arrow glyph, so draw one that sits on the text baseline.
+---
+
+<svg class="chev" viewBox="0 0 16 16" width="0.85em" height="0.85em" aria-hidden="true" focusable="false"
+  ><path d="M3 8h9.5M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
+  ></path></svg
+><span class="sr-only"> → </span>
+
+<style>
+  .chev {
+    display: inline-block;
+    vertical-align: -0.08em;
+    margin-inline: 0.15em;
+    opacity: 0.6;
+  }
+</style>

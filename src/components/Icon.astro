@@ -1,0 +1,185 @@
+---
+// One stroke icon set on a 24px grid, so every glyph shares weight and corners.
+// The eye glyphs stand in for the SF Symbols the app uses in the menu bar.
+export type IconName =
+  | 'arrow-right'
+  | 'arrow-up-right'
+  | 'download'
+  | 'github'
+  | 'sun'
+  | 'moon'
+  | 'battery'
+  | 'eye'
+  | 'eye-fill'
+  | 'eye-slash'
+  | 'login'
+  | 'refresh'
+  | 'display'
+  | 'shield'
+  | 'seal'
+  | 'code'
+  | 'laptop'
+  | 'power'
+  | 'agent'
+  | 'lock'
+  | 'terminal';
+
+interface Props {
+  name: IconName;
+  size?: number;
+  class?: string;
+  label?: string;
+}
+
+const { name, size = 18, class: className, label } = Astro.props;
+---
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width={size}
+  height={size}
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.6"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  class={className}
+  role={label ? 'img' : undefined}
+  aria-label={label}
+  aria-hidden={label ? undefined : 'true'}
+  focusable="false"
+>
+  {name === 'arrow-right' && <path d="M5 12h14M13 6l6 6-6 6" />}
+  {name === 'arrow-up-right' && <path d="M7 17 17 7M8 7h9v9" />}
+  {name === 'download' && <path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19.5h14" />}
+  {
+    name === 'github' && (
+      <path
+        fill="currentColor"
+        stroke="none"
+        d="M12 2.2a9.8 9.8 0 0 0-3.1 19.1c.5.1.7-.2.7-.5v-1.7c-2.7.6-3.3-1.3-3.3-1.3-.4-1.1-1.1-1.4-1.1-1.4-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.8.1-.6.3-1.1.6-1.3-2.2-.3-4.5-1.1-4.5-4.8 0-1.1.4-1.9 1-2.6-.1-.3-.4-1.3.1-2.6 0 0 .8-.3 2.7 1a9.3 9.3 0 0 1 4.9 0c1.9-1.3 2.7-1 2.7-1 .5 1.3.2 2.3.1 2.6.6.7 1 1.5 1 2.6 0 3.8-2.3 4.6-4.5 4.8.4.3.7.9.7 1.8v2.7c0 .3.2.6.7.5A9.8 9.8 0 0 0 12 2.2Z"
+      />
+    )
+  }
+  {
+    name === 'sun' && (
+      <>
+        <circle cx="12" cy="12" r="3.75" />
+        <path d="M12 2.75v1.5M12 19.75v1.5M2.75 12h1.5M19.75 12h1.5M5.46 5.46l1.06 1.06M17.48 17.48l1.06 1.06M5.46 18.54l1.06-1.06M17.48 6.52l1.06-1.06" />
+      </>
+    )
+  }
+  {name === 'moon' && <path d="M19.5 14.6A7.9 7.9 0 0 1 9.4 4.5a7.9 7.9 0 1 0 10.1 10.1Z" />}
+  {
+    name === 'battery' && (
+      <>
+        <rect x="2.75" y="7.25" width="16.5" height="9.5" rx="2.6" />
+        <path d="M21.5 10.5v3" />
+        <rect x="5" y="9.5" width="3.3" height="5" rx="1" fill="currentColor" stroke="none" />
+      </>
+    )
+  }
+  {
+    name === 'eye' && (
+      <>
+        <path d="M2.5 12S6 5.75 12 5.75 21.5 12 21.5 12 18 18.25 12 18.25 2.5 12 2.5 12Z" />
+        <circle cx="12" cy="12" r="3" />
+      </>
+    )
+  }
+  {
+    name === 'eye-fill' && (
+      <path
+        fill="currentColor"
+        stroke="none"
+        fill-rule="evenodd"
+        d="M12 5c-6.6 0-10.3 6.6-10.4 6.6a.8.8 0 0 0 0 .8S5.4 19 12 19s10.3-6.6 10.4-6.6a.8.8 0 0 0 0-.8S18.6 5 12 5Zm0 3.6a3.4 3.4 0 1 0 0 6.8 3.4 3.4 0 0 0 0-6.8Z"
+      />
+    )
+  }
+  {
+    name === 'eye-slash' && (
+      <>
+        <path d="M9.9 6a9.6 9.6 0 0 1 2.1-.25C18 5.75 21.5 12 21.5 12a17 17 0 0 1-2.4 3.1M6.4 7.6C3.9 9.3 2.5 12 2.5 12S6 18.25 12 18.25c1.7 0 3.2-.5 4.4-1.2" />
+        <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
+        <path d="M3.5 3.5l17 17" />
+      </>
+    )
+  }
+  {
+    name === 'login' && (
+      <>
+        <path d="M14 4.5h3.5a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H14" />
+        <path d="M4.5 12h10m0 0-3.75-3.75M14.5 12l-3.75 3.75" />
+      </>
+    )
+  }
+  {
+    name === 'refresh' && (
+      <>
+        <path d="M19.5 12a7.5 7.5 0 0 1-13.1 5" />
+        <path d="M4.5 12a7.5 7.5 0 0 1 13.1-5" />
+        <path d="M18 3.5v3.75h-3.75M6 20.5v-3.75h3.75" />
+      </>
+    )
+  }
+  {
+    name === 'display' && (
+      <>
+        <rect x="2.75" y="4" width="18.5" height="12.5" rx="2" />
+        <path d="M9 20h6M12 16.5V20" />
+      </>
+    )
+  }
+  {
+    name === 'shield' && (
+      <>
+        <path d="M12 2.75 19.25 5.5v5.6c0 4.6-3 8.3-7.25 10.15C7.75 19.4 4.75 15.7 4.75 11.1V5.5L12 2.75Z" />
+        <path d="m8.75 12 2.25 2.25 4.25-4.5" />
+      </>
+    )
+  }
+  {
+    name === 'seal' && (
+      <>
+        <path d="M12 2.75l2.2 1.6 2.7-.1.9 2.6 2.2 1.6-.8 2.6.8 2.6-2.2 1.6-.9 2.6-2.7-.1-2.2 1.6-2.2-1.6-2.7.1-.9-2.6-2.2-1.6.8-2.6-.8-2.6 2.2-1.6.9-2.6 2.7.1L12 2.75Z" />
+        <path d="m8.9 12 2.1 2.1 4.1-4.2" />
+      </>
+    )
+  }
+  {name === 'code' && <path d="m8.5 7.5-5 4.5 5 4.5M15.5 7.5l5 4.5-5 4.5M13.5 5l-3 14" />}
+  {
+    name === 'laptop' && (
+      <>
+        <rect x="4.25" y="5" width="15.5" height="10.5" rx="1.75" />
+        <path d="M2 18.75h20" />
+      </>
+    )
+  }
+  {name === 'power' && <path d="M12 3v8.5M7.05 6.4a7.5 7.5 0 1 0 9.9 0" />}
+  {
+    name === 'agent' && (
+      <>
+        <rect x="4" y="7" width="16" height="12" rx="3.5" />
+        <path d="M12 3.5V7M9.25 12.5v1.5M14.75 12.5v1.5" />
+      </>
+    )
+  }
+  {
+    name === 'lock' && (
+      <>
+        <rect x="5" y="10.5" width="14" height="10" rx="2.5" />
+        <path d="M8.25 10.5V8a3.75 3.75 0 0 1 7.5 0v2.5" />
+      </>
+    )
+  }
+  {
+    name === 'terminal' && (
+      <>
+        <rect x="2.75" y="4.25" width="18.5" height="15.5" rx="2.5" />
+        <path d="m7 9.5 3 2.5-3 2.5M12.5 15h4.5" />
+      </>
+    )
+  }
+</svg>
