@@ -44,31 +44,63 @@ npm run assets
 
 That regenerates `favicon.svg`, `favicon.ico`, `apple-touch-icon.png` and the 1200×630 `og.png`. The outputs are committed, so builds don't run this step.
 
+## Design
+
+The page was art-directed with [tasteskill v2](https://www.tasteskill.dev/) (direction "The product performs", seed 425275325; palette redrawn once to "green-black and bone" so the violet app icon is the only purple on the page). In short:
+
+- **Idea:** one night on a closed MacBook. The hero headline is split around a frame, "Lid shut." on the left and "Still running." on the right, while a reel of that night passes through it as you scroll: the lid coming down at 11:41 pm, the moon, the build at 62%, done at 3:12 am.
+- **Pictures are the product's own interface,** built in HTML at true size from the app's real strings (the panel, the helper alert, Settings), plus macOS screens around it (Terminal, Downloads, Notification Center, System Settings). Every fragment's root has `data-ui`; inside it the product's own conventions apply.
+- **The live thing:** the five settings as sentences, each ending in Restless's switch. Flipping them changes the menu bar eye (`eye.slash` / `eye` / `eye.fill`) and the status line using the app's own rules.
+- **House rules:** one typeface (Hanken Grotesk, self-hosted), five type sizes, one ground, one ink, one accent on the download action. No gradients, no shadows outside fragments, no eyebrow labels, no hairlines.
+
+Sample content, for you to keep or replace: the build, deploy, download, notification and agent logs in the fragments are invented to look like a believable night's work; none of them claims anything about real users.
+
+### Checking it
+
+The skill's gates were run on the production build (`npm run build && npm run preview`):
+
+```sh
+node <taste-skill>/scripts/lint.mjs src
+node <taste-skill>/scripts/inspect.mjs http://localhost:4321/
+```
+
+Both pass with no failures. Two warnings are known and deliberate: em dashes appear only inside quoted app and Terminal strings, and on phones the inspector reads the hero reel's clipped frames as crossing the headline (they're clipped by the window, so nothing visibly does). Its working files go in `.taste-skill/`, which is git-ignored.
+
+## Pictures
+
+`public/media/` holds the found pictures, with their sources in `credits.json` and a credit line in the footer. Both are public domain:
+
+- *Moon, New York, March 8, 1865* by Lewis Morris Rutherfurd (ETH-Bibliothek Zürich, via Wikimedia Commons)
+- *Five Minutes in Orbit* by NASA Earth Observatory, from photographs by the Expedition 73 crew (via Wikimedia Commons), trimmed to 14 seconds, muted, as WebM and MP4
+
 ## Layout
 
 ```
 src/
-  pages/index.astro        the page, section by section
+  pages/index.astro        the page, in the order of its argument
   components/
-    Hero.astro             hero with the live eye
-    EyeMark.astro          the icon as inline SVG (`live` adds the moving iris)
-    LidDemo.astro          3D laptop and a working copy of the Restless panel
-    Details.astro          menu bar states and the smaller features
-    Helper.astro           how lid-closed mode stays passwordless
-    Trust.astro, Download.astro, Header.astro, Footer.astro
-  scripts/
-    eye.ts                 spring-driven gaze that follows the pointer
-    lid.ts                 the demo's state, mirroring the app's panel logic
+    Hero.astro             split headline and the night reel
+    Showcase.astro         what keeps running: SSH, downloads, builds, agents
+    Switches.astro         the live thing: five sentences with switches
+    HowItWorks.astro       approve the helper once (pinned stage, three states)
+    Proof.astro            signed, notarized, open source, Sparkle, macOS 26
+    Closing.astro          the download, with Restless as it first opens
+    Night.astro            the closing clip
+    Footer.astro           one line, plus credits
+    EyeMark.astro          the app icon as inline SVG
+    frags/                 interface fragments (panel, menu bar, alert, windows)
+  scripts/reel.ts          the hero reel's scroll stepping
   lib/release.ts           build-time GitHub release lookup with fallback
-  styles/global.css        dark palette (from the icon's purples), type scale, buttons, reveals
+  styles/global.css        tokens, type steps, buttons, entrances
+  styles/ui.css            fragment styles, scoped to [data-ui]
 scripts/generate-assets.mjs  favicon, touch icon and OG image
 ```
 
 ## Motion and accessibility
 
-Motion is kept to a few purposeful pieces: the hero entrance, the eye (which opens on load, follows the pointer and glances around when idle), scroll reveals, the lid demo and the helper diagram. The lid demo plays its story once by itself (close the lid, keep building, open it again), so visitors get the point without clicking anything; clicking the laptop or flipping a switch hands control to them. With `prefers-reduced-motion` the eye stays still, reveals become plain fades and the laptop switches state without animating. Everything also renders without JavaScript.
+The hero reel and the how-it-works stage are the two held moments; both are plain `position: sticky` with native scrolling, and each held screen has its own caption and count. Section parts rise in once as they arrive, pictures open from the bottom edge, controls answer press and hover, and the closing clip plays only while it's on screen. With `prefers-reduced-motion` nothing travels: the reel swaps frames in place, entrances become fades and the clip stays on its poster. Everything renders without JavaScript.
 
-The site is dark only, whatever the visitor's system setting. The palette uses the dark variant of the icon (`public/brand/restless-dark.svg`); the light SVG is kept alongside it for reference.
+The site is dark only, whatever the visitor's system setting.
 
 ## Credits
 

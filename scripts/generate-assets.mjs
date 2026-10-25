@@ -85,11 +85,15 @@ const touchSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024
 await writeFile(pub('apple-touch-icon.png'), png(touchSvg, 180));
 
 // -------------------------------------------------------------------- og.png
+// The site's own look: green-black ground, bone type, the hero headline,
+// and the 1865 moon (public domain, Lewis Morris Rutherfurd) on the right.
 const font = (weight) =>
-  readFile(require.resolve(`@fontsource/inter/files/inter-latin-${weight}-normal.woff`));
-const iconUri = `data:image/png;base64,${png(crop(dark), 360).toString('base64')}`;
+  readFile(require.resolve(`@fontsource/hanken-grotesk/files/hanken-grotesk-latin-${weight}-normal.woff`));
+const iconUri = `data:image/png;base64,${png(crop(dark), 160).toString('base64')}`;
+const moonUri = `data:image/jpeg;base64,${(await readFile(pub('media/moon-1865.jpg'))).toString('base64')}`;
 
 const h = (type, style, ...children) => ({ type, props: { style, children } });
+const img = (src, style) => ({ type: 'img', props: { src, style } });
 
 const og = await satori(
   h(
@@ -98,56 +102,45 @@ const og = await satori(
       width: '100%',
       height: '100%',
       display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: '#0b0a13',
-      backgroundImage:
-        'radial-gradient(ellipse 60% 70% at 50% 0%, rgba(131,112,250,0.38), rgba(11,10,19,0) 70%)',
-      fontFamily: 'Inter',
-      color: '#f2f0ff',
-    },
-    {
-      type: 'img',
-      props: {
-        src: iconUri,
-        width: 168,
-        height: 168,
-        style: { marginBottom: 44 },
-      },
+      backgroundColor: '#161c1a',
+      fontFamily: 'Hanken Grotesk',
+      color: '#e3e2da',
     },
     h(
       'div',
       {
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
-        fontSize: 68,
-        fontWeight: 600,
-        letterSpacing: '-0.04em',
-        lineHeight: 1.04,
+        justifyContent: 'space-between',
+        width: 700,
+        padding: '56px 0 56px 64px',
       },
-      h('div', {}, 'Keep your Mac awake,'),
-      h('div', { color: '#8a85ad' }, 'even with the lid closed.'),
+      h(
+        'div',
+        { display: 'flex', alignItems: 'center', gap: 16, fontSize: 32, fontWeight: 500, letterSpacing: '-0.02em' },
+        img(iconUri, { width: 52, height: 52 }),
+        'Restless',
+      ),
+      h(
+        'div',
+        { display: 'flex', flexDirection: 'column', fontSize: 96, fontWeight: 500, letterSpacing: '-0.05em', lineHeight: 0.95 },
+        h('div', {}, 'Lid shut.'),
+        h('div', {}, 'Still running.'),
+      ),
+      h(
+        'div',
+        { fontSize: 28, fontWeight: 400, lineHeight: 1.35, color: '#e3e2da', maxWidth: 560 },
+        'A macOS menu bar app that keeps your Mac awake with the lid closed.',
+      ),
     ),
-    h(
-      'div',
-      {
-        marginTop: 34,
-        fontSize: 26,
-        fontWeight: 400,
-        letterSpacing: '-0.01em',
-        color: '#aaa5c9',
-      },
-      'Restless · a native macOS menu bar app · free and open source',
-    ),
+    img(moonUri, { width: 500, height: 630, objectFit: 'cover', objectPosition: '50% 40%' }),
   ),
   {
     width: 1200,
     height: 630,
     fonts: [
-      { name: 'Inter', data: await font(400), weight: 400, style: 'normal' },
-      { name: 'Inter', data: await font(600), weight: 600, style: 'normal' },
+      { name: 'Hanken Grotesk', data: await font(400), weight: 400, style: 'normal' },
+      { name: 'Hanken Grotesk', data: await font(500), weight: 500, style: 'normal' },
     ],
   },
 );
