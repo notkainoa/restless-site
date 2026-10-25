@@ -4,20 +4,23 @@
 
 /* ------------------------------------------------------------------------
    Tokens. Direction: "The product performs" (tasteskill v2, seed 425275325).
-   Palette: green-black and bone. One ground, one ink, one accent; the
-   accent marks the download action and nothing else. The violet in the
-   app icon is the brand's own and appears only in the icon.
+   Palette: neutral blacks and grays with the app icon's violet as the one
+   accent. Sections alternate between the near-black ground and a dark gray
+   so the page has rhythm; violet marks the download action, links and
+   focus, never a whole section. Violets come from icon/restless-dark.svg.
    ------------------------------------------------------------------------ */
 :root {
   color-scheme: dark;
 
-  --bg: #161c1a;
-  --surface: #1f2725;
-  --ink: #e3e2da;
-  --muted: #8e948d;
-  --accent: #9fc7b8;
-  --accent-ink: #161c1a;
-  --accent-strong: #b4d6c9;
+  --bg: #0e0e11;
+  --bg-alt: #17171b;
+  --surface: #222227;
+  --ink: #e8e7ee;
+  --muted: #9a99a3;
+  --accent: #8370fa;
+  --accent-ink: #100a2a;
+  --accent-strong: #a998fd;
+  --deep: #181246;
 
   /* Five type steps. Headings share one statement size. */
   --step-small: clamp(0.8125rem, 0.79rem + 0.1vw, 0.875rem);
@@ -45,11 +48,14 @@
   --font-sans: 'Hanken Grotesk Variable', ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, 'SF Mono', Menlo, monospace; /* taste-skill-ignore: only for literal commands and terminal output */
   --color-bg: var(--bg);
+  --color-bg-alt: var(--bg-alt);
   --color-surface: var(--surface);
   --color-ink: var(--ink);
   --color-muted: var(--muted);
   --color-accent: var(--accent);
   --color-accent-ink: var(--accent-ink);
+  --color-accent-strong: var(--accent-strong);
+  --color-deep: var(--deep);
 }
 
 /* ------------------------------------------------------------------------
@@ -177,7 +183,7 @@
 
   .link {
     text-decoration: underline;
-    text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
+    text-decoration-color: color-mix(in srgb, var(--accent-strong) 70%, transparent);
     text-underline-offset: 0.2em;
     text-decoration-thickness: 0.07em;
     transition: text-decoration-color var(--t-hover) ease;
