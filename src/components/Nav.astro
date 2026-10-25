@@ -1,0 +1,52 @@
+---
+// The top bar: the mark, GitHub and (except on the download page) Download.
+import EyeMark from './EyeMark.astro';
+import { DOWNLOAD_PAGE, REPO_URL } from '../lib/release';
+
+interface Props {
+  /** Where the mark goes: the top of the home page, or the home page. */
+  home?: string;
+  /** Hide the Download button, for the download page itself. */
+  download?: boolean;
+}
+const { home = '#top', download = true } = Astro.props;
+---
+
+<header class="nav wrap" data-load style="--d:0ms">
+  <a href={home} class="mark" aria-label={home === '#top' ? 'Restless, back to top' : 'Restless, home'}>
+    <EyeMark id="nav" size={28} />
+    <span>Restless</span>
+  </a>
+  <nav aria-label="Site" class="nav-links">
+    <a class="plain-link" href={REPO_URL}>GitHub</a>
+    {download && <a class="button button-sm" href={DOWNLOAD_PAGE}>Download for Mac</a>}
+  </nav>
+</header>
+
+<style>
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    /* Auto side margins would shrink it to its content inside a flex column. */
+    width: 100%;
+    height: 4.5rem;
+    font-size: var(--step-small);
+  }
+
+  .mark {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: var(--step-body);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: clamp(1rem, 2vw, 1.75rem);
+  }
+</style>

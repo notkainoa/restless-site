@@ -1,11 +1,11 @@
 ---
 // Hero: the headline split around one frame showing Restless at 11:41 pm,
 // the panel open over a build that's about to run with the lid shut.
-import EyeMark from './EyeMark.astro';
+import Nav from './Nav.astro';
 import MenuBar from './frags/MenuBar.astro';
 import Panel from './frags/Panel.astro';
 import Terminal from './frags/Terminal.astro';
-import { REPO_URL, type Release } from '../lib/release';
+import type { Release } from '../lib/release';
 
 interface Props {
   release: Release;
@@ -14,16 +14,7 @@ const { release } = Astro.props;
 ---
 
 <section id="top" class="hero">
-  <header class="nav wrap" data-load style="--d:0ms">
-    <a href="#top" class="mark" aria-label="Restless, back to top">
-      <EyeMark id="nav" size={28} />
-      <span>Restless</span>
-    </a>
-    <nav aria-label="Site" class="nav-links">
-      <a class="plain-link" href={REPO_URL}>GitHub</a>
-      <a class="button button-sm" href={release.downloadUrl}>Download for Mac</a>
-    </nav>
-  </header>
+  <Nav />
 
   <div class="stage wrap">
     <h1 class="split head">
@@ -70,30 +61,6 @@ const { release } = Astro.props;
   /* Auto side margins would shrink flex children to their content. */
   .hero > .wrap {
     width: 100%;
-  }
-
-  .nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    height: 4.5rem;
-    font-size: var(--step-small);
-  }
-
-  .mark {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
-    font-size: var(--step-body);
-    font-weight: 500;
-    letter-spacing: -0.02em;
-  }
-
-  .nav-links {
-    display: flex;
-    align-items: center;
-    gap: clamp(1rem, 2vw, 1.75rem);
   }
 
   /* The halves hold the edges; the frame sits between them. */
