@@ -1,0 +1,475 @@
+/* ------------------------------------------------------------------------
+   Interface fragments: cropped pieces of Restless and of the macOS screens
+   around it, at their true size. Everything here is scoped to [data-ui], so
+   the product's own conventions apply inside (12px cards, 1px control
+   strokes, shadows on things that really float) and the page's house rules
+   hold everywhere else. Values follow the app's panel: the tray is #1E1E1E,
+   cards are the system's faint fill, switches are the small system switch.
+   ------------------------------------------------------------------------ */
+
+[data-ui] {
+  --ui-window: #1e1e1e;
+  --ui-bar: #2a2a2a;
+  --ui-card: rgb(255 255 255 / 0.055);
+  --ui-card-hover: rgb(255 255 255 / 0.09);
+  --ui-sep: rgb(255 255 255 / 0.09);
+  --ui-text: #ececec;
+  --ui-text-2: #a1a1a1;
+  --ui-blue: #0a6fe0;
+  --ui-green: #30d158;
+  --ui-red: #ff6961;
+  --ui-off: rgb(255 255 255 / 0.16);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 1.35;
+  letter-spacing: 0;
+  color: var(--ui-text);
+  text-align: left;
+}
+
+[data-ui] .ui-window {
+  background: var(--ui-window);
+  border-radius: 12px;
+  box-shadow:
+    0 0 0 1px rgb(255 255 255 / 0.1),
+    0 22px 48px rgb(0 0 0 / 0.45);
+  overflow: hidden;
+}
+
+[data-ui] .ui-titlebar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 30px;
+  padding-inline: 12px;
+  background: var(--ui-bar);
+  border-bottom: 1px solid rgb(0 0 0 / 0.5);
+  color: var(--ui-text-2);
+  font-size: 12px;
+}
+
+[data-ui] .ui-lights {
+  display: flex;
+  gap: 7px;
+}
+
+[data-ui] .ui-lights span {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #ff5f57;
+}
+
+[data-ui] .ui-lights span:nth-child(2) {
+  background: #febc2e;
+}
+
+[data-ui] .ui-lights span:nth-child(3) {
+  background: #28c840;
+}
+
+[data-ui] .ui-title {
+  flex: 1;
+  margin-right: 52px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Terminal */
+[data-ui] .ui-term {
+  margin: 0;
+  padding: 12px 14px 16px;
+  font-family: var(--font-mono); /* taste-skill-ignore: terminal output in <pre><code> */
+  font-size: 12px;
+  line-height: 1.6;
+  color: #e4e4e4;
+  white-space: pre;
+  overflow: hidden;
+}
+
+[data-ui] .ui-term .p {
+  color: #8ad1a6;
+}
+[data-ui] .ui-term .d {
+  color: #8f8f8f;
+}
+[data-ui] .ui-term .ok {
+  color: #8ad1a6;
+}
+[data-ui] .ui-term .hi {
+  color: #ffffff;
+}
+[data-ui] .ui-term .cursor {
+  display: inline-block;
+  width: 7px;
+  height: 14px;
+  vertical-align: -2px;
+  background: #e4e4e4;
+}
+
+/* Menu bar strip */
+[data-ui] .ui-menubar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+  height: 26px;
+  padding-inline: 12px;
+  background: rgb(30 30 30 / 0.92);
+  font-size: 13px;
+  font-weight: 500;
+  color: #f2f2f2;
+}
+
+[data-ui] .ui-menubar .ui-glyph {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 22px;
+  border-radius: 5px;
+}
+
+[data-ui] .ui-menubar .ui-glyph.is-open {
+  background: rgb(255 255 255 / 0.18);
+}
+
+[data-ui] .ui-batt {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Restless panel */
+[data-ui] .ui-panel {
+  width: 340px;
+  padding: 10px;
+  border-radius: 14px;
+  background: var(--ui-window);
+  box-shadow:
+    0 0 0 1px rgb(255 255 255 / 0.1),
+    0 18px 40px rgb(0 0 0 / 0.5);
+}
+
+[data-ui] .ui-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--ui-card);
+  margin-bottom: 8px;
+}
+
+[data-ui] .ui-status-icon {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: rgb(255 255 255 / 0.08);
+  color: var(--ui-text);
+}
+
+[data-ui] .ui-status-title {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+[data-ui] .ui-status-sub,
+[data-ui] .ui-sub {
+  font-size: 11.5px;
+  color: var(--ui-text-2);
+}
+
+[data-ui] .ui-group {
+  border-radius: 12px;
+  background: var(--ui-card);
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+
+[data-ui] .ui-group:last-child {
+  margin-bottom: 0;
+}
+
+[data-ui] .ui-group-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px 2px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--ui-text-2);
+}
+
+[data-ui] .ui-group-head .on {
+  margin-left: auto;
+  color: var(--ui-text-2);
+  font-weight: 500;
+}
+
+[data-ui] .ui-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 34px;
+  padding: 4px 12px;
+}
+
+[data-ui] .ui-row + .ui-row {
+  border-top: 1px solid var(--ui-sep);
+}
+
+[data-ui] .ui-row .ok {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--ui-text);
+}
+
+[data-ui] .ui-row .ok svg {
+  color: var(--ui-green);
+}
+
+[data-ui] .ui-foot {
+  padding: 2px 12px 10px;
+  font-size: 11.5px;
+  color: var(--ui-text-2);
+}
+
+/* The small system switch. Real buttons where the page lets you use them. */
+[data-ui] .ui-switch,
+[data-ui].ui-switch {
+  position: relative;
+  flex: none;
+  width: 2em;
+  height: 1.1em;
+  border-radius: 999px;
+  background: var(--ui-off);
+  transition: background-color 200ms ease;
+}
+
+[data-ui] .ui-switch::after,
+[data-ui].ui-switch::after {
+  content: '';
+  position: absolute;
+  top: 0.08em;
+  left: 0.08em;
+  width: 0.94em;
+  height: 0.94em;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.35);
+  transition: transform 240ms var(--ease-out);
+}
+
+[data-ui] .ui-switch[aria-checked='true'],
+[data-ui].ui-switch[aria-checked='true'],
+[data-ui] .ui-switch.is-on {
+  background: var(--ui-blue);
+}
+
+[data-ui] .ui-switch[aria-checked='true']::after,
+[data-ui].ui-switch[aria-checked='true']::after,
+[data-ui] .ui-switch.is-on::after {
+  transform: translateX(0.9em);
+}
+
+[data-ui] .ui-switch.small {
+  font-size: 18px;
+}
+
+/* Alert (NSAlert, macOS 26) */
+[data-ui] .ui-alert {
+  width: 272px;
+  padding: 20px 16px 16px;
+  border-radius: 18px;
+  background: #2b2b2b;
+  box-shadow:
+    0 0 0 1px rgb(255 255 255 / 0.1),
+    0 24px 56px rgb(0 0 0 / 0.55);
+  text-align: center;
+}
+
+[data-ui] .ui-alert h4 {
+  margin: 12px 0 6px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+[data-ui] .ui-alert p {
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--ui-text);
+}
+
+[data-ui] .ui-alert p + p {
+  margin-top: 8px;
+}
+
+[data-ui] .ui-alert-buttons {
+  display: grid;
+  gap: 6px;
+  margin-top: 16px;
+}
+
+[data-ui] .ui-btn {
+  display: block;
+  width: 100%;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.14);
+  color: var(--ui-text);
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+}
+
+[data-ui] .ui-btn.primary {
+  background: var(--ui-blue);
+  color: #fff;
+}
+
+/* System Settings pane */
+[data-ui] .ui-settings {
+  width: 460px;
+}
+
+[data-ui] .ui-settings-body {
+  padding: 16px 18px 20px;
+  background: #1e1e1e;
+}
+
+[data-ui] .ui-settings h4 {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+[data-ui] .ui-settings .ui-caption {
+  font-size: 11.5px;
+  color: var(--ui-text-2);
+  margin: 14px 2px 6px;
+  font-weight: 600;
+}
+
+[data-ui] .ui-app {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+[data-ui] .ui-app .eyemark {
+  flex: none;
+}
+
+/* Downloads popover */
+[data-ui] .ui-dl {
+  width: 440px;
+  padding: 8px;
+  border-radius: 14px;
+  background: #262626;
+  box-shadow:
+    0 0 0 1px rgb(255 255 255 / 0.1),
+    0 18px 40px rgb(0 0 0 / 0.5);
+}
+
+[data-ui] .ui-dl-row {
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  gap: 10px;
+  align-items: center;
+  padding: 8px;
+  border-radius: 8px;
+}
+
+[data-ui] .ui-dl-row.is-selected {
+  background: rgb(255 255 255 / 0.07);
+}
+
+[data-ui] .ui-file {
+  width: 28px;
+  height: 34px;
+  border-radius: 3px;
+  background: #d9d9d9;
+  clip-path: polygon(0 0, 70% 0, 100% 22%, 100% 100%, 0 100%);
+}
+
+[data-ui] .ui-file.zip {
+  background: #b9b9b9;
+}
+
+[data-ui] .ui-name {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+[data-ui] .ui-bar-track {
+  height: 4px;
+  margin: 5px 0 4px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.14);
+  overflow: hidden;
+}
+
+[data-ui] .ui-bar-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--ui-blue);
+  transform-origin: left;
+}
+
+[data-ui] .ui-dl-foot {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 8px 4px;
+  margin-top: 4px;
+  border-top: 1px solid var(--ui-sep);
+  font-size: 11.5px;
+  color: var(--ui-text-2);
+}
+
+/* Notification Center */
+[data-ui] .ui-notes {
+  display: grid;
+  gap: 8px;
+  width: 300px;
+}
+
+[data-ui] .ui-note {
+  display: grid;
+  grid-template-columns: 30px 1fr auto;
+  gap: 10px;
+  padding: 11px 12px;
+  border-radius: 16px;
+  background: rgb(44 44 44 / 0.96);
+  box-shadow:
+    0 0 0 1px rgb(255 255 255 / 0.08),
+    0 10px 28px rgb(0 0 0 / 0.4);
+}
+
+[data-ui] .ui-note-icon {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  background: #3a3a3a;
+  color: #e4e4e4;
+}
+
+[data-ui] .ui-note b {
+  display: block;
+  font-weight: 600;
+}
+
+[data-ui] .ui-note time {
+  font-size: 11px;
+  color: var(--ui-text-2);
+}

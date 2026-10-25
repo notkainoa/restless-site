@@ -1,0 +1,218 @@
+---
+// "Pinned fragment, changing state": how lid-closed mode stays passwordless,
+// told as three statements that scroll past one held stage. The stage shows
+// the three real screens: Restless's alert, System Settings, Restless's own
+// Settings with the helper on. Strings are the app's own.
+import Chevron from './Chevron.astro';
+import HelperAlert from './frags/HelperAlert.astro';
+import LoginItems from './frags/LoginItems.astro';
+import SettingsWindow from './frags/SettingsWindow.astro';
+
+interface Props {
+  version: string;
+}
+const { version } = Astro.props;
+---
+
+<section id="how" class="how wrap" aria-labelledby="how-title" data-how>
+  <div class="steps">
+    <h2 id="how-title" class="head" data-reveal>Approve it once</h2>
+
+    <div class="step is-active" data-step="0">
+      <p class="statement">First, turn on lid-closed mode.</p>
+      <p class="support">
+        Sleeping with the lid shut is controlled by <code class="cmd">pmset</code>’s
+        <code class="cmd">disablesleep</code> flag, which only root can change. Restless offers to set up a small
+        helper for that one job.
+      </p>
+    </div>
+    <div class="step" data-step="1">
+      <p class="statement">Then switch it on in System Settings.</p>
+      <p class="support">
+        Under General <Chevron /> Login Items &amp; Extensions, once. The helper only answers code signed by
+        Restless’s own Developer ID team.
+      </p>
+    </div>
+    <div class="step" data-step="2">
+      <p class="statement">After that, it never asks again.</p>
+      <p class="support">
+        Lid Closed <Chevron /> Keep Awake turns on and off without a password. Rather not install anything? Just
+        This Time keeps the Mac awake with one password prompt, and you can remove the helper whenever you like.
+      </p>
+    </div>
+  </div>
+
+  <div class="stage-col">
+    <div class="stage" data-ui role="img" aria-label="The three screens: Restless's setup alert, System Settings with Restless allowed, and Restless Settings showing Background Helper on.">
+      <div class="state is-active" data-state="0"><HelperAlert /></div>
+      <div class="state" data-state="1"><LoginItems /></div>
+      <div class="state" data-state="2"><SettingsWindow version={version} /></div>
+    </div>
+    <p class="count small" data-how-count>1 of 3</p>
+  </div>
+</section>
+
+<style>
+  .how {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--gutter);
+    align-items: start;
+    padding-top: clamp(7rem, 14vw, 13rem);
+  }
+
+  .steps {
+    grid-column: 1 / span 5;
+  }
+
+  .step {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 80vh;
+  }
+
+  .step:first-of-type {
+    min-height: 62vh;
+    justify-content: flex-start;
+    padding-top: 2.5rem;
+  }
+
+  .statement {
+    font-size: var(--step-lead);
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+    font-weight: 500;
+    color: var(--muted);
+    transition: color 300ms ease;
+  }
+
+  .support {
+    max-width: 44ch;
+    margin-top: 0.75rem;
+    font-size: var(--step-body);
+    color: var(--muted);
+    transition: color 300ms ease;
+  }
+
+  .step.is-active .statement,
+  .step.is-active .support {
+    color: var(--ink);
+  }
+
+  .stage-col {
+    grid-column: 7 / span 6;
+    position: sticky;
+    top: 14vh;
+  }
+
+  .stage {
+    position: relative;
+    display: grid;
+    place-items: center;
+    height: min(72vh, 36rem);
+    border-radius: var(--radius);
+    background: var(--surface);
+    overflow: clip;
+  }
+
+  .state {
+    grid-area: 1 / 1;
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+    transition:
+      opacity 300ms ease,
+      transform 400ms var(--ease-out);
+  }
+
+  .state.is-active {
+    opacity: 1;
+    transform: none;
+  }
+
+  .count {
+    margin-top: 0.75rem;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (max-width: 899px) {
+    .how {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .steps {
+      display: contents;
+    }
+
+    .how h2 {
+      order: 0;
+      margin-bottom: 1.25rem;
+    }
+
+    .stage-col {
+      order: 1;
+      min-width: 0;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      padding-block: 0.75rem;
+      background: var(--bg);
+    }
+
+    .stage {
+      height: 46svh;
+    }
+
+    /* Fit by cropping to the active region, not by shrinking the text. */
+    .state {
+      align-self: start;
+      margin-top: 1rem;
+    }
+
+    .step {
+      order: 2;
+      min-height: 60svh;
+      padding-top: 1.5rem;
+      justify-content: flex-start;
+    }
+
+    .step:first-of-type {
+      min-height: 60svh;
+      padding-top: 1.5rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .state {
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  // The statement nearest the middle of the viewport sets the stage's state.
+  const root = document.querySelector<HTMLElement>('[data-how]');
+  if (root) {
+    const steps = [...root.querySelectorAll<HTMLElement>('[data-step]')];
+    const states = [...root.querySelectorAll<HTMLElement>('[data-state]')];
+    const count = root.querySelector<HTMLElement>('[data-how-count]');
+    let current = 0;
+    const set = (i: number) => {
+      if (i === current) return;
+      current = i;
+      steps.forEach((s, j) => s.classList.toggle('is-active', j === i));
+      states.forEach((s, j) => s.classList.toggle('is-active', j === i));
+      if (count) count.textContent = `${i + 1} of ${states.length}`;
+    };
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) if (e.isIntersecting) set(Number((e.target as HTMLElement).dataset.step));
+      },
+      { rootMargin: '-45% 0px -45% 0px' },
+    );
+    steps.forEach((s) => io.observe(s));
+  }
+</script>

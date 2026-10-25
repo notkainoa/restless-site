@@ -1,0 +1,274 @@
+---
+// "Sentences with switches": the panel's five settings, each said as a
+// sentence that ends in the product's own switch. Flip one and its band
+// fills, the consequence appears, and the menu bar eye and status line above
+// change exactly as they do in the app. Lid open and lid closed start on.
+import MenuBar from './frags/MenuBar.astro';
+
+const bands = [
+  {
+    key: 'lidOpen',
+    sentence: 'Stay awake with the lid open.',
+    result: 'Holds an IOKit power assertion, the one <code class="cmd">caffeinate</code> uses. No password.',
+    on: true,
+  },
+  {
+    key: 'lidClosed',
+    sentence: 'Stay awake with the lid shut.',
+    result: 'Runs <code class="cmd">pmset -a disablesleep 1</code> through the helper, so shutting the lid stops nothing.',
+    on: true,
+  },
+  {
+    key: 'sleepDisplay',
+    sentence: 'Sleep the screen when it shuts.',
+    result: 'The screen goes dark at lid close. Off, it keeps drawing at zero brightness, so a computer-use agent can still see it.',
+    on: false,
+  },
+  {
+    key: 'lockScreen',
+    sentence: 'Lock the Mac when it shuts.',
+    result: 'Staying awake skips the usual lock-on-sleep, so Restless locks it. With an external display plugged in, this and Sleep Display step aside.',
+    on: false,
+  },
+  {
+    key: 'battery',
+    sentence: 'Let go at 20% battery.',
+    result: 'On battery at 20% or less, Restless releases everything and the Mac sleeps normally.',
+    on: false,
+  },
+] as const;
+---
+
+<section id="switches" class="switches" aria-labelledby="switches-title" data-switches data-glyph-state="eye-fill">
+  <div class="top wrap">
+    <h2 id="switches-title" class="head" data-reveal>Five switches</h2>
+    <div class="live" data-reveal style="--i:1">
+      <div class="live-ui" data-ui>
+        <MenuBar time="Fri 11:41 PM" battery={86} live />
+        <div class="live-status" aria-live="polite">
+          <span class="ui-status-title" data-title>Awake with the lid closed</span>
+          <span class="ui-status-sub" data-sub>When shut: screen on, unlocked</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ul class="bands">
+    {
+      bands.map((b, i) => (
+        <li class:list={['band', { 'is-on': b.on }]} data-band={b.key} data-reveal style={`--i:${i}`}>
+          <div class="band-inner wrap">
+            <div class="band-text">
+              <h3 class="sentence" id={`s-${b.key}`}>
+                {b.sentence}
+              </h3>
+              <div class="result">
+                <p set:html={b.result} />
+              </div>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              class="ui-switch"
+              data-ui
+              aria-checked={b.on ? 'true' : 'false'}
+              aria-labelledby={`s-${b.key}`}
+              data-key={b.key}
+            />
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .switches {
+    padding-top: clamp(7rem, 14vw, 13rem);
+  }
+
+  .top {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--gutter);
+    align-items: end;
+    margin-bottom: clamp(2rem, 4vw, 3.5rem);
+  }
+
+  .top h2 {
+    grid-column: 1 / span 6;
+  }
+
+  .live {
+    grid-column: 8 / span 5;
+    justify-self: end;
+  }
+
+  .live-ui {
+    width: 340px;
+    border-radius: 10px;
+    overflow: clip;
+    background: #1e1e1e;
+  }
+
+  .live-status {
+    display: grid;
+    padding: 10px 14px 12px;
+  }
+
+  .bands {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .band {
+    background: var(--bg);
+    transition: background-color 300ms ease;
+  }
+
+  .band.is-on {
+    background: var(--surface);
+  }
+
+  .band-inner {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--gutter);
+    align-items: center;
+    min-height: 20vh;
+    padding-block: 1.75rem;
+  }
+
+  .band-text {
+    grid-column: 1 / span 10;
+  }
+
+  .sentence {
+    font-size: clamp(1.875rem, 3.6vw, 3.75rem);
+    line-height: 1;
+    letter-spacing: -0.045em;
+    color: var(--muted);
+    transition: color 300ms ease;
+  }
+
+  .is-on .sentence {
+    color: var(--ink);
+  }
+
+  /* The consequence opens under the sentence when the band is on. */
+  .result {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 300ms var(--ease-out);
+  }
+
+  .result p {
+    overflow: hidden;
+    max-width: 62ch;
+    font-size: var(--step-body);
+    opacity: 0;
+    transition: opacity 200ms ease;
+  }
+
+  .is-on .result {
+    grid-template-rows: 1fr;
+  }
+
+  .is-on .result p {
+    padding-top: 0.75rem;
+    opacity: 1;
+    transition-delay: 80ms;
+  }
+
+  .ui-switch {
+    grid-column: 11 / span 2;
+    justify-self: end;
+    font-size: clamp(1.875rem, 3.6vw, 3.75rem);
+  }
+
+  /* A bigger target than the drawn switch. */
+  .ui-switch::before {
+    content: '';
+    position: absolute;
+    inset: -0.4em -0.3em;
+  }
+
+  @media (max-width: 899px) {
+    .top {
+      display: block;
+    }
+
+    .live {
+      margin-top: 1.5rem;
+    }
+
+    .live-ui {
+      width: 100%;
+      max-width: 340px;
+    }
+
+    .band-inner {
+      min-height: 132px;
+    }
+
+    .band-text {
+      grid-column: 1 / span 9;
+    }
+
+    .sentence {
+      font-size: var(--step-head);
+      line-height: 1;
+    }
+
+    .ui-switch {
+      grid-column: 10 / span 3;
+      font-size: 2rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .result {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  // Status rules from the app's panel (Sources/Panel/PanelViews.swift).
+  const root = document.querySelector<HTMLElement>('[data-switches]');
+  if (root) {
+    const state: Record<string, boolean> = {};
+    const switches = [...root.querySelectorAll<HTMLButtonElement>('[data-key]')];
+    const title = root.querySelector<HTMLElement>('[data-title]')!;
+    const sub = root.querySelector<HTMLElement>('[data-sub]')!;
+    switches.forEach((s) => (state[s.dataset.key!] = s.getAttribute('aria-checked') === 'true'));
+
+    const render = () => {
+      for (const s of switches) {
+        const on = state[s.dataset.key!];
+        s.setAttribute('aria-checked', String(on));
+        s.closest('[data-band]')?.classList.toggle('is-on', on);
+      }
+      root.dataset.glyphState = state.lidClosed ? 'eye-fill' : state.lidOpen ? 'eye' : 'eye-slash';
+      if (state.lidClosed) {
+        title.textContent = 'Awake with the lid closed';
+        sub.textContent = `When shut: ${state.sleepDisplay ? 'screen off' : 'screen on'}, ${state.lockScreen ? 'locked' : 'unlocked'}`;
+      } else if (state.lidOpen) {
+        title.textContent = 'Awake';
+        sub.textContent = 'Your Mac and screen stay on';
+      } else {
+        title.textContent = 'Sleep allowed';
+        sub.textContent = 'Your Mac sleeps as usual';
+      }
+    };
+
+    switches.forEach((s) =>
+      s.addEventListener('click', () => {
+        state[s.dataset.key!] = !state[s.dataset.key!];
+        render();
+      }),
+    );
+    render();
+  }
+</script>

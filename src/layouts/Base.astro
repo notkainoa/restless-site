@@ -1,6 +1,6 @@
 ---
 import '../styles/global.css';
-import interLatin from '@fontsource-variable/inter/files/inter-latin-opsz-normal.woff2?url';
+import fontLatin from '@fontsource-variable/hanken-grotesk/files/hanken-grotesk-latin-wght-normal.woff2?url';
 
 interface Props {
   title: string;
@@ -20,14 +20,14 @@ const ogImage = new URL('/og.png', Astro.site);
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    <link rel="preload" href={interLatin} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={fontLatin} as="font" type="font/woff2" crossorigin />
 
     <!-- Content stays visible without JS; reveals only arm once this runs. -->
     <script is:inline>
       document.documentElement.classList.add('js');
     </script>
 
-    <meta name="theme-color" content="#0b0a13" />
+    <meta name="theme-color" content="#161c1a" />
     <meta name="color-scheme" content="dark" />
 
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
@@ -42,34 +42,40 @@ const ogImage = new URL('/og.png', Astro.site);
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Restless: keep your Mac awake, even with the lid closed." />
+    <meta property="og:image:alt" content="Restless: Lid shut. Still running. Beside a photograph of the full moon from 1865." />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
   </head>
-  <body class="bg-bg text-ink">
+  <body>
     <a
       href="#main"
-      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-surface focus:px-4 focus:py-2 focus:text-sm focus:shadow-lg"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:bg-surface focus:px-4 focus:py-2"
       >Skip to content</a
     >
     <slot />
 
     <script>
-      // Reveal sections as they scroll into view, once.
-      const items = document.querySelectorAll<HTMLElement>('[data-reveal]');
+      // Parts of each section arrive once, as the section scrolls in. A picture
+      // that opens with clip-path starts fully clipped, and the observer counts
+      // that as not visible, so it watches the picture's parent instead.
+      const targets = new Map<Element, HTMLElement[]>();
+      for (const el of document.querySelectorAll<HTMLElement>('[data-reveal], [data-open]')) {
+        const watch = el.hasAttribute('data-open') && el.parentElement ? el.parentElement : el;
+        targets.set(watch, [...(targets.get(watch) ?? []), el]);
+      }
       const io = new IntersectionObserver(
         (entries) => {
           for (const entry of entries) {
             if (!entry.isIntersecting) continue;
-            entry.target.classList.add('is-in');
+            for (const el of targets.get(entry.target) ?? []) el.classList.add('is-in');
             io.unobserve(entry.target);
           }
         },
-        { rootMargin: '0px 0px -12% 0px' },
+        { rootMargin: '0px 0px -12% 0px', threshold: 0.1 },
       );
-      items.forEach((el) => io.observe(el));
+      targets.forEach((_, el) => io.observe(el));
     </script>
   </body>
 </html>

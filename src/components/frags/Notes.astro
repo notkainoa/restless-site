@@ -1,0 +1,32 @@
+---
+// Notification Center the next morning: what finished overnight.
+import Icon from '../Icon.astro';
+---
+
+<div class="ui-notes">
+  <div class="ui-note">
+    <span class="ui-note-icon"><Icon name="code" size={17} /></span>
+    <span><b>Benchmarks</b>Nightly suite finished, 3% faster than last week.</span>
+    <time>1:26 am</time>
+  </div>
+  <div class="ui-note">
+    <span class="ui-note-icon"><Icon name="terminal" size={17} /></span>
+    <span><b>Docker</b>Rebuilt 6 images without cache.</span>
+    <time>2:09 am</time>
+  </div>
+  <div class="ui-note">
+    <span class="ui-note-icon"><Icon name="terminal" size={17} /></span>
+    <span><b>make release</b>Built 1,284 targets with 0 errors in 3 h 31 min.</span>
+    <time>3:12 am</time>
+  </div>
+  <div class="ui-note">
+    <span class="ui-note-icon"><Icon name="code" size={17} /></span>
+    <span><b>Tests passed</b>4,812 tests on the release build, 0 failures.</span>
+    <time>3:40 am</time>
+  </div>
+  <div class="ui-note">
+    <span class="ui-note-icon"><Icon name="download" size={17} /></span>
+    <span><b>Release archive</b>Signed, notarized and uploaded.</span>
+    <time>3:44 am</time>
+  </div>
+</div>

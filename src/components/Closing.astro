@@ -1,0 +1,146 @@
+---
+// "First step, already open": the page ends on the accent field with
+// Restless as it first opens, every switch off, and the one action.
+import Panel from './frags/Panel.astro';
+import MenuBar from './frags/MenuBar.astro';
+import { REPO_URL, type Release } from '../lib/release';
+
+interface Props {
+  release: Release;
+}
+const { release } = Astro.props;
+---
+
+<section id="download" class="closing" aria-labelledby="closing-title">
+  <div class="field wrap">
+    <div class="words">
+      <h2 id="closing-title" class="closing-line" data-reveal>Close the lid tonight.</h2>
+      <p class="after" data-reveal style="--i:1">
+        Download {release.assetName}, unzip it and move Restless to Applications. It opens with every switch off, so
+        nothing changes until you flip one.
+      </p>
+      <div class="actions" data-reveal style="--i:2">
+        <a class="button dark" href={release.downloadUrl}>Download for Mac</a>
+        <a class="link" href={release.notesUrl}>Release notes</a>
+      </div>
+      <p class="amped" data-reveal style="--i:3">
+        Coming from Amped? Restless copies your settings the first time it runs.
+        <a class="link" href={`${REPO_URL}#moving-from-amped`}>Moving from Amped</a>
+      </p>
+    </div>
+
+    <div class="first-run" data-ui data-reveal style="--i:2">
+      <MenuBar time="Fri 9:02 PM" battery={100} glyph="eye-slash" open />
+      <div class="drop"><Panel percent={100} sleepDisplay={false} lockScreen={false} battery={false} /></div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .closing {
+    margin-top: clamp(6rem, 10vw, 9rem);
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  .field {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--gutter);
+    align-items: center;
+    min-height: 80svh;
+    padding-block: 4rem;
+  }
+
+  .words {
+    grid-column: 1 / span 6;
+    align-self: end;
+  }
+
+  .closing-line {
+    font-size: var(--step-display);
+    line-height: 0.92;
+    letter-spacing: -0.055em;
+    max-width: 8ch;
+  }
+
+  .after {
+    max-width: 40ch;
+    margin-top: 1.5rem;
+    font-size: var(--step-body);
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.25rem;
+    margin-top: 1.75rem;
+  }
+
+  .button.dark {
+    background: var(--accent-ink);
+    color: var(--ink);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .button.dark:hover {
+      background: #000;
+    }
+  }
+
+  .amped {
+    max-width: 44ch;
+    margin-top: 2rem;
+    font-size: var(--step-small);
+  }
+
+  .first-run {
+    grid-column: 8 / span 4;
+    justify-self: end;
+    width: 360px;
+    border-radius: 10px;
+    overflow: clip;
+    background: #1e1e1e;
+  }
+
+  .drop {
+    display: flex;
+    justify-content: flex-end;
+    padding: 6px 10px 10px;
+  }
+
+  @media (max-width: 899px) {
+    .field {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      min-height: 84svh;
+      gap: 2.5rem;
+      padding-block: 3rem;
+    }
+
+    .closing-line {
+      font-size: var(--step-display);
+    }
+
+    .words {
+      align-self: stretch;
+    }
+
+    .first-run {
+      width: 100%;
+      max-width: 360px;
+      align-self: flex-start;
+    }
+
+    .drop {
+      justify-content: flex-start;
+    }
+
+    .actions .button {
+      width: 100%;
+      min-height: 52px;
+    }
+  }
+</style>

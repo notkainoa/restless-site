@@ -1,0 +1,43 @@
+---
+// Restless → Settings, with the helper installed. Labels and the footnote
+// are the app's own (Sources/Panel/PanelViews.swift).
+import Icon from '../Icon.astro';
+
+interface Props {
+  version: string;
+}
+const { version } = Astro.props;
+---
+
+<div class="ui-window ui-settings">
+  <div class="ui-titlebar">
+    <span class="ui-lights" aria-hidden="true"><span></span><span></span><span></span></span>
+    <span class="ui-title">Settings</span>
+  </div>
+  <div class="ui-settings-body">
+    <p class="ui-caption" style="margin-top:0">General</p>
+    <div class="ui-group">
+      <div class="ui-row">Launch at Login <span class="ui-switch small is-on"></span></div>
+      <div class="ui-row">Show in Menu Bar <span class="ui-switch small is-on"></span></div>
+    </div>
+    <p class="ui-caption">Lid Closed</p>
+    <div class="ui-group">
+      <div class="ui-row hl">
+        Background Helper
+        <span class="ok"><Icon name="check-circle" size={15} /> On</span>
+      </div>
+      <p class="ui-foot">Lid Closed Keep Awake turns on and off without asking for your password.</p>
+    </div>
+    <p class="ui-caption">Updates</p>
+    <div class="ui-group">
+      <div class="ui-row">Version <span class="ui-sub">{version}</span></div>
+      <div class="ui-row">Check Automatically <span class="ui-switch small is-on"></span></div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .hl {
+    background: rgb(48 209 88 / 0.08);
+  }
+</style>

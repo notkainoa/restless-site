@@ -1,0 +1,60 @@
+---
+// The Restless panel, as the app draws it (Sources/Panel/PanelViews.swift):
+// a status card, then groups by lid position, then Battery.
+import Icon from '../Icon.astro';
+
+interface Props {
+  lidOpen?: boolean;
+  lidClosed?: boolean;
+  sleepDisplay?: boolean;
+  lockScreen?: boolean;
+  battery?: boolean;
+  percent?: number;
+}
+const {
+  lidOpen = false,
+  lidClosed = false,
+  sleepDisplay = true,
+  lockScreen = true,
+  battery = true,
+  percent = 100,
+} = Astro.props;
+
+// Same rules as the app's status card.
+const glyph = lidClosed ? 'eye-fill' : lidOpen ? 'eye' : 'eye-slash';
+const title = lidClosed ? 'Awake with the lid closed' : lidOpen ? 'Awake' : 'Sleep allowed';
+const sub = lidClosed
+  ? `When shut: ${sleepDisplay ? 'screen off' : 'screen on'}, ${lockScreen ? 'locked' : 'unlocked'}`
+  : lidOpen
+    ? 'Your Mac and screen stay on'
+    : 'Your Mac sleeps as usual';
+
+const sw = (on: boolean) => ['ui-switch', 'small', { 'is-on': on }];
+---
+
+<div class="ui-panel">
+  <div class="ui-status">
+    <span class="ui-status-icon"><Icon name={glyph} size={18} /></span>
+    <span style="flex:1">
+      <span class="ui-status-title" style="display:block">{title}</span>
+      <span class="ui-status-sub" style="display:block">{sub}</span>
+    </span>
+    <span class="ui-sub">{percent}%</span>
+  </div>
+  <div class="ui-group">
+    <div class="ui-group-head"><Icon name="sun" size={13} /> Lid Open</div>
+    <div class="ui-row">Keep Awake <span class:list={sw(lidOpen)}></span></div>
+  </div>
+  <div class="ui-group">
+    <div class="ui-group-head">
+      <Icon name="moon" size={12} /> Lid Closed {lidClosed && <span class="on">On</span>}
+    </div>
+    <div class="ui-row">Keep Awake <span class:list={sw(lidClosed)}></span></div>
+    <div class="ui-row">Sleep Display <span class:list={sw(sleepDisplay)}></span></div>
+    <div class="ui-row">Lock Screen <span class:list={sw(lockScreen)}></span></div>
+  </div>
+  <div class="ui-group">
+    <div class="ui-group-head"><Icon name="battery" size={14} /> Battery</div>
+    <div class="ui-row">Auto-off at 20% <span class:list={sw(battery)}></span></div>
+  </div>
+</div>

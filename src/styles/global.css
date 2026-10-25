@@ -1,51 +1,55 @@
 @import 'tailwindcss';
-@import '@fontsource-variable/inter/opsz.css';
+@import '@fontsource-variable/hanken-grotesk/wght.css';
+@import './ui.css';
 
 /* ------------------------------------------------------------------------
-   Palette. Dark only. Every purple here comes from the app icon's dark
-   variant: lids #8370fa, moon #a998fd, tile #251d6c -> #181246.
+   Tokens. Direction: "The product performs" (tasteskill v2, seed 425275325).
+   Palette: green-black and bone. One ground, one ink, one accent; the
+   accent marks the download action and nothing else. The violet in the
+   app icon is the brand's own and appears only in the icon.
    ------------------------------------------------------------------------ */
 :root {
   color-scheme: dark;
-  --bg: #0b0a13;
-  --bg-tint: #100e1c;
-  --surface: #13111f;
-  --surface-2: #1a1729;
-  --line: rgb(169 152 253 / 0.09);
-  --line-strong: rgb(169 152 253 / 0.16);
-  --ink: #f2f0ff;
-  --ink-2: #aaa5c9;
-  --ink-3: #8a85ad;
-  --accent: #a998fd;
-  --accent-hover: #bbadff;
-  --accent-ink: #120e33;
-  --moon: #a998fd;
-  --glow: rgb(131 112 250 / 0.32);
-  --switch-off: rgb(169 152 253 / 0.16);
-  --shadow-card: 0 1px 0 rgb(255 255 255 / 0.03) inset, 0 12px 32px -16px rgb(0 0 0 / 0.6);
-  --shadow-float: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 32px 64px -24px rgb(0 0 0 / 0.75);
+
+  --bg: #161c1a;
+  --surface: #1f2725;
+  --ink: #e3e2da;
+  --muted: #8e948d;
+  --accent: #9fc7b8;
+  --accent-ink: #161c1a;
+  --accent-strong: #b4d6c9;
+
+  /* Five type steps. Headings share one statement size. */
+  --step-small: clamp(0.8125rem, 0.79rem + 0.1vw, 0.875rem);
+  --step-body: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);
+  --step-lead: clamp(1.25rem, 1.1rem + 0.7vw, 1.625rem);
+  --step-head: clamp(2rem, 1.3rem + 3.2vw, 4rem);
+  --step-display: clamp(3.5rem, 1.2rem + 7vw, 7rem);
+
+  --margin: clamp(1rem, 2.2vw, 2rem);
+  --gutter: clamp(0.75rem, 1.4vw, 1.5rem);
+  --radius: 4px;
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);
+  --ease-soft: cubic-bezier(0.33, 1, 0.68, 1);
+  --t-press: 140ms;
+  --t-hover: 180ms;
+  --t-ui: 240ms;
+  --t-reveal: 800ms;
+  --stagger-item: 70ms;
 }
 
 @theme inline {
-  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-mono: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace;
-
+  --font-sans: 'Hanken Grotesk Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, monospace; /* taste-skill-ignore: only for literal commands and terminal output */
   --color-bg: var(--bg);
-  --color-bg-tint: var(--bg-tint);
   --color-surface: var(--surface);
-  --color-surface-2: var(--surface-2);
-  --color-line: var(--line);
-  --color-line-strong: var(--line-strong);
   --color-ink: var(--ink);
-  --color-ink-2: var(--ink-2);
-  --color-ink-3: var(--ink-3);
+  --color-muted: var(--muted);
   --color-accent: var(--accent);
-  --color-accent-hover: var(--accent-hover);
   --color-accent-ink: var(--accent-ink);
-  --color-moon: var(--moon);
-
-  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
-  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 /* ------------------------------------------------------------------------
@@ -56,29 +60,40 @@
     background: var(--bg);
     color: var(--ink);
     font-family: var(--font-sans);
-    font-optical-sizing: auto;
+    font-size: 100%;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
     -webkit-text-size-adjust: 100%;
-    scroll-padding-top: 5rem;
   }
 
   body {
     min-height: 100dvh;
     overflow-x: clip;
-    font-size: 1rem;
-    line-height: 1.6;
+    font-size: var(--step-body);
+    line-height: 1.45;
+    letter-spacing: -0.005em;
+    font-weight: 400;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-weight: 500;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
   }
 
   ::selection {
-    background: color-mix(in srgb, var(--moon) 35%, transparent);
+    background: var(--accent);
+    color: var(--accent-ink);
   }
 
   :focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 3px;
-    border-radius: 6px;
   }
 
   a,
@@ -90,233 +105,179 @@
     cursor: pointer;
   }
 
-  code,
-  kbd {
-    font-family: var(--font-mono);
-    font-size: 0.9em;
+  img,
+  video {
+    display: block;
+    max-width: 100%;
   }
 }
 
 /* ------------------------------------------------------------------------
-   Type. Tracking tightens as size grows; leading tightens with it.
+   Page parts shared by every section
    ------------------------------------------------------------------------ */
 @layer components {
-  .t-display {
-    font-size: clamp(2.375rem, 1.35rem + 4.4vw, 4.5rem);
-    line-height: 1.02;
-    letter-spacing: -0.042em;
-    font-weight: 640;
-    text-wrap: balance;
-  }
-
-  .t-title {
-    font-size: clamp(1.875rem, 1.3rem + 2.1vw, 2.75rem);
-    line-height: 1.08;
-    letter-spacing: -0.034em;
-    font-weight: 620;
-    text-wrap: balance;
-  }
-
-  .t-lead {
-    font-size: clamp(1.0625rem, 0.95rem + 0.45vw, 1.25rem);
-    line-height: 1.55;
-    letter-spacing: -0.011em;
-    color: var(--ink-2);
-    text-wrap: pretty;
-  }
-
-  .t-body {
-    font-size: 0.96875rem;
-    line-height: 1.6;
-    letter-spacing: -0.006em;
-    color: var(--ink-2);
-    text-wrap: pretty;
-  }
-
-  .t-label {
-    font-size: 0.875rem;
-    line-height: 1.4;
-    font-weight: 560;
-    letter-spacing: -0.005em;
-    color: var(--accent);
-  }
-
-  .shell {
-    width: 100%;
-    max-width: 72rem;
+  .wrap {
+    padding-inline: var(--margin);
+    max-width: 120rem;
     margin-inline: auto;
-    padding-inline: clamp(1.25rem, 4vw, 2.5rem);
   }
 
-  /* Inline code tokens like `pmset` and `eye.fill` */
-  .token {
-    font-family: var(--font-mono);
-    font-size: 0.84em;
-    padding: 0.12em 0.4em;
-    border-radius: 0.375rem;
-    background: var(--surface-2);
-    border: 1px solid var(--line);
-    color: var(--ink);
-    white-space: nowrap;
+  .grid12 {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--gutter);
   }
 
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: 1.5rem;
-    box-shadow: var(--shadow-card);
+  .head {
+    font-size: var(--step-head);
+    line-height: 0.95;
+    letter-spacing: -0.05em;
+    font-weight: 500;
   }
 
-  /* ---------------------------------------------------------------------
-     Buttons. Feedback on press; hover only where hover exists.
-     --------------------------------------------------------------------- */
-  .btn {
+  .lead {
+    font-size: var(--step-lead);
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+  }
+
+  .small {
+    font-size: var(--step-small);
+    line-height: 1.45;
+  }
+
+  .button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
-    height: 3rem;
-    padding-inline: 1.375rem;
-    border-radius: 999px;
-    font-size: 0.96875rem;
-    font-weight: 580;
-    letter-spacing: -0.01em;
+    gap: 0.5em;
+    min-height: 2.75rem;
+    padding: 0.6rem 1.1rem;
+    border-radius: var(--radius);
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-weight: 500;
+    font-size: var(--step-body);
+    line-height: 1.2;
     white-space: nowrap;
-    user-select: none;
     transition:
-      transform 160ms var(--ease-out),
-      background-color 150ms ease,
-      border-color 150ms ease,
-      color 150ms ease,
-      box-shadow 150ms ease;
+      transform var(--t-press) var(--ease-out),
+      background-color var(--t-hover) ease;
   }
 
-  .btn:active {
+  .button:active {
     transform: scale(0.97);
   }
 
-  .btn-primary {
-    background: var(--accent);
-    color: var(--accent-ink);
-    box-shadow:
-      0 1px 0 rgb(255 255 255 / 0.18) inset,
-      0 8px 24px -10px var(--glow);
-  }
-
-  .btn-ghost {
-    color: var(--ink);
-    background: color-mix(in srgb, var(--surface) 70%, transparent);
-    border: 1px solid var(--line-strong);
-  }
-
-  .btn-sm {
-    height: 2.25rem;
-    padding-inline: 0.95rem;
-    font-size: 0.875rem;
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    .btn-primary:hover {
-      background: var(--accent-hover);
-    }
-
-    .btn-ghost:hover {
-      background: var(--surface-2);
-      border-color: color-mix(in srgb, var(--accent) 30%, var(--line-strong));
-    }
-
-    .btn:hover .nudge {
-      transform: translate(1.5px, -1.5px);
-    }
-
-    .btn:hover .nudge-down {
-      transform: translateY(1.5px);
-    }
-  }
-
-  .nudge,
-  .nudge-down {
-    transition: transform 200ms var(--ease-out);
+  .button-sm {
+    min-height: 2.5rem;
+    padding: 0.45rem 0.9rem;
+    font-size: var(--step-small);
   }
 
   .link {
-    color: var(--ink);
     text-decoration: underline;
-    text-decoration-color: var(--line-strong);
+    text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
     text-underline-offset: 0.2em;
-    text-decoration-thickness: 1px;
-    transition:
-      text-decoration-color 150ms ease,
-      color 150ms ease;
+    text-decoration-thickness: 0.07em;
+    transition: text-decoration-color var(--t-hover) ease;
+  }
+
+  .plain-link {
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 0.25em;
+    text-decoration-thickness: 0.07em;
+    transition: text-decoration-color var(--t-hover) ease;
   }
 
   @media (hover: hover) and (pointer: fine) {
-    .link:hover {
+    .button:hover {
+      background: var(--accent-strong);
+    }
+
+    .link:hover,
+    .plain-link:hover {
       text-decoration-color: currentColor;
     }
+  }
+
+  /* Literal commands in running text. Real code, so the code face. */
+  .cmd {
+    font-family: var(--font-mono);
+    font-size: 0.86em;
+    letter-spacing: 0;
+    white-space: nowrap;
   }
 }
 
 /* ------------------------------------------------------------------------
-   Entrance reveals. Content stays visible without JS: the hidden starting
-   state only applies once the page script has tagged <html class="js">.
+   Entrances. Content is painted on the first frame without JS; once the
+   script tags <html class="js">, parts below the fold rise once, in reading
+   order, as their section arrives.
    ------------------------------------------------------------------------ */
-.js [data-reveal] {
-  opacity: 0;
-  transform: translateY(14px);
-  filter: blur(6px);
-  transition:
-    opacity 700ms var(--ease-out),
-    transform 900ms var(--ease-out),
-    filter 700ms var(--ease-out);
-  transition-delay: calc(var(--d, 0) * 70ms);
-}
-
-.js [data-reveal].is-in {
-  opacity: 1;
-  transform: none;
-  filter: none;
-}
-
-/* Hero plays on load rather than on scroll. */
-.js [data-enter] {
-  opacity: 0;
-  animation: enter 900ms var(--ease-out) forwards;
-  animation-delay: calc(120ms + var(--d, 0) * 70ms);
-}
-
-@keyframes enter {
-  from {
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-reveal] {
     opacity: 0;
-    transform: translateY(12px);
-    filter: blur(6px);
+    transform: translateY(24px);
+    transition:
+      opacity 700ms var(--ease-out),
+      transform 900ms var(--ease-expo);
+    transition-delay: calc(var(--i, 0) * var(--stagger-item));
   }
-  to {
+
+  .js [data-reveal].is-in {
     opacity: 1;
     transform: none;
-    filter: none;
+  }
+
+  /* Pictures open from the bottom edge instead of rising. */
+  .js [data-open] {
+    clip-path: inset(0 0 100% 0);
+    transition: clip-path 1100ms var(--ease-in-out);
+    transition-delay: calc(var(--i, 0) * var(--stagger-item));
+  }
+
+  .js [data-open].is-in {
+    clip-path: inset(0);
+  }
+
+  /* First screen: arrives on load, settled by 1.2s, four parts at most. */
+  .js [data-load] {
+    opacity: 0;
+    transform: translateY(16px);
+    animation: load-rise 600ms var(--ease-out) forwards;
+    animation-delay: var(--d, 0ms);
+  }
+
+  .js [data-line] {
+    display: inline-block;
+    transform: translateY(105%);
+    animation: load-line 800ms var(--ease-expo) forwards;
+    animation-delay: calc(100ms + var(--i, 0) * 90ms);
+  }
+
+  @keyframes load-rise {
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes load-line {
+    to {
+      transform: none;
+    }
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .js [data-reveal] {
-    transform: none;
-    filter: none;
+    opacity: 0;
     transition: opacity 300ms ease;
-    transition-delay: 0ms;
   }
 
-  .js [data-enter] {
-    animation: fade 300ms ease forwards;
-  }
-
-  @keyframes fade {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
+  .js [data-reveal].is-in {
+    opacity: 1;
   }
 }
-

@@ -1,0 +1,52 @@
+---
+// The page's one rest, after the action: Earth at night from orbit, city
+// lights below and the moon coming up. A muted loop that plays only while
+// it's on screen; under reduced motion it stays on its poster frame.
+---
+
+<figure class="night" data-night>
+  <video muted loop playsinline preload="metadata" poster="/media/orbit-night-poster.jpg" width="720" height="480">
+    <source src="/media/orbit-night.webm" type="video/webm" />
+    <source src="/media/orbit-night.mp4" type="video/mp4" />
+  </video>
+  <figcaption class="wrap">Earth at night from the International Space Station, the moon rising over the horizon.</figcaption>
+</figure>
+
+<style>
+  .night {
+    margin: 0;
+  }
+
+  video {
+    width: 100%;
+    height: min(76svh, 56vw);
+    object-fit: cover;
+    background: #020304;
+  }
+
+  figcaption {
+    padding-top: 0.75rem;
+    font-size: var(--step-small);
+    color: var(--muted);
+  }
+</style>
+
+<script>
+  const fig = document.querySelector<HTMLElement>('[data-night]');
+  const video = fig?.querySelector('video');
+  if (fig && video) {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let inView = false;
+    const sync = () => {
+      const play = inView && !document.hidden && !reduce.matches;
+      if (play && video.paused) void video.play().catch(() => {});
+      if (!play && !video.paused) video.pause();
+    };
+    new IntersectionObserver(([e]) => {
+      inView = e.isIntersecting;
+      sync();
+    }).observe(fig);
+    document.addEventListener('visibilitychange', sync);
+    reduce.addEventListener('change', sync);
+  }
+</script>

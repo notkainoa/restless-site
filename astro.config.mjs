@@ -13,6 +13,8 @@ const site =
 export default defineConfig({
   site,
   devToolbar: { enabled: false },
+  // Terminal fragments are <pre>; keep their line breaks exactly as written.
+  compressHTML: false,
   vite: {
     plugins: [tailwindcss()],
   },

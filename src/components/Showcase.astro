@@ -1,0 +1,237 @@
+---
+// "Output index, live sheet": the four things the README says keep running
+// with the lid shut. Pick a name; the stage shows that work the next morning.
+import Terminal from './frags/Terminal.astro';
+import Downloads from './frags/Downloads.astro';
+import Notes from './frags/Notes.astro';
+
+const outputs = [
+  { id: 'ssh', name: 'SSH sessions', note: 'Connected at 11:38 pm, still connected at 3:12 am.' },
+  { id: 'downloads', name: 'Downloads', note: '61 GB pulled down while the lid was shut.' },
+  { id: 'builds', name: 'Builds', note: 'What finished overnight, waiting in Notification Center.' },
+  { id: 'agents', name: 'AI agents', note: 'A coding agent that worked for 2 h 18 min, unattended.' },
+];
+---
+
+<section id="keeps-running" class="showcase wrap" aria-labelledby="keeps-title" data-showcase>
+  <div class="index">
+    <h2 id="keeps-title" class="head" data-reveal>What keeps running</h2>
+    <div class="names" role="tablist" aria-label="Work that keeps running" data-reveal style="--i:1">
+      {
+        outputs.map((o, i) => (
+          <button
+            type="button"
+            role="tab"
+            id={`tab-${o.id}`}
+            aria-controls={`sheet-${o.id}`}
+            aria-selected={i === 0 ? 'true' : 'false'}
+            tabindex={i === 0 ? 0 : -1}
+            class="name"
+            data-tab={o.id}
+          >
+            {o.name}
+          </button>
+        ))
+      }
+    </div>
+  </div>
+
+  <div class="stage" data-open style="--i:2">
+    {
+      outputs.map((o, i) => (
+        <div
+          class:list={['sheet', { 'is-active': i === 0 }]}
+          id={`sheet-${o.id}`}
+          role="tabpanel"
+          aria-labelledby={`tab-${o.id}`}
+          hidden={i !== 0}
+          data-sheet={o.id}
+        >
+          <p class="note">{o.note}</p>
+          <div class="fit" data-ui>
+            {o.id === 'ssh' && (
+              <Terminal title="dev@build-box — ssh — 96×28" width={560}><span class="d">Last login: Fri Oct 23 23:38:02 2026 from 192.168.1.20</span>
+<span class="p">dev@build-box:~$</span> tail -f /var/log/deploy.log
+<span class="d">23:41:07</span>  deploy started, release 1.4.2
+<span class="d">23:58:40</span>  migrate users ................. ok
+<span class="d">00:47:13</span>  migrate events ................ ok
+<span class="d">01:12:55</span>  rebuild search index ........ 62%
+<span class="d">02:36:19</span>  rebuild search index .......... ok
+<span class="d">03:04:51</span>  warm caches ................... ok
+<span class="d">03:06:12</span>  health check api-1 ............ ok
+<span class="d">03:06:13</span>  health check api-2 ............ ok
+<span class="d">03:06:13</span>  health check worker-1 ......... ok
+<span class="d">03:09:40</span>  switch traffic to release 1.4.2
+<span class="d">03:11:58</span>  drain release 1.4.1 ........... ok
+<span class="d">03:12:07</span>  <span class="ok">deploy finished in 3h 31m</span>
+<span class="p">dev@build-box:~$</span> uptime
+ 03:12:31 up 41 days,  6:02,  1 user,  load average: 0.42
+<span class="cursor"></span></Terminal>
+            )}
+            {o.id === 'downloads' && <Downloads />}
+            {o.id === 'builds' && <Notes />}
+            {o.id === 'agents' && (
+              <Terminal title="agent — ~/restless — 96×28" width={560}><span class="hi">› Fix the flaky sleep test, then open a PR.</span>
+
+<span class="d">23:44</span>  Read Sources/SleepController.swift
+<span class="d">23:51</span>  Ran swift test: 247 passed, 1 failed
+<span class="d">00:37</span>  Edited SleepController.swift (+6 −2)
+<span class="d">01:20</span>  Ran swift test 20 times: 248 passed each time
+<span class="d">01:58</span>  Committed "Wait for the assertion before quitting"
+<span class="d">02:02</span>  <span class="ok">Opened pull request #212</span>
+<span class="d">02:03</span>  Requested review from @maintainers
+<span class="d">02:05</span>  Watching CI: 3 checks running
+<span class="d">02:14</span>  macOS 26 / arm64 ............ passed
+<span class="d">02:16</span>  Lint ........................ passed
+<span class="d">02:21</span>  Release build ............... passed
+
+<span class="d">Worked for 2h 18m.</span></Terminal>
+            )}
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .showcase {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--gutter);
+    align-items: start;
+    padding-block: clamp(7rem, 14vw, 13rem) 0;
+  }
+
+  .index {
+    grid-column: 1 / span 5;
+    position: sticky;
+    top: 12svh;
+  }
+
+  .names {
+    display: grid;
+    justify-items: start;
+    margin-top: clamp(2rem, 4vw, 3.5rem);
+  }
+
+  .name {
+    padding: 0.12em 0;
+    font-size: var(--step-lead);
+    letter-spacing: -0.025em;
+    color: var(--muted);
+    text-align: left;
+    line-height: 1.1;
+    transition: color var(--t-hover) ease;
+  }
+
+  .name[aria-selected='true'] {
+    color: var(--ink);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .name:hover {
+      color: var(--ink);
+    }
+  }
+
+  .stage {
+    grid-column: 7 / span 6;
+    position: relative;
+    height: min(88svh, 42rem);
+    min-height: 34rem;
+    border-radius: var(--radius);
+    background: var(--surface);
+    overflow: clip;
+  }
+
+  .sheet {
+    position: absolute;
+    inset: 0;
+    padding: 2rem 0 0 clamp(1.25rem, 4.4vw, 4rem);
+  }
+
+  .sheet.is-active {
+    animation: sheet-in 200ms ease both;
+  }
+
+  @keyframes sheet-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  .note {
+    max-width: 34ch;
+    margin-bottom: 1.5rem;
+    font-size: var(--step-body);
+    color: var(--ink);
+  }
+
+  .fit {
+    width: max-content;
+  }
+
+  @media (max-width: 899px) {
+    .showcase {
+      display: block;
+    }
+
+    .index {
+      position: static;
+    }
+
+    .names {
+      display: flex;
+      flex-wrap: wrap;
+      column-gap: 1.25rem;
+      margin: 1.25rem 0 1rem;
+    }
+
+    .name {
+      font-size: var(--step-lead);
+      letter-spacing: -0.03em;
+      min-height: 44px;
+    }
+
+    /* Fit the stage to the sheet; it still crops the sheet's right edge. */
+    .stage {
+      height: auto;
+      min-height: 0;
+    }
+
+    .sheet {
+      position: relative;
+      padding: 1.25rem 0 1.25rem 1rem;
+    }
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-showcase]');
+  if (root) {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[data-tab]')];
+    const sheets = [...root.querySelectorAll<HTMLElement>('[data-sheet]')];
+    const select = (i: number, focus = false) => {
+      tabs.forEach((t, j) => {
+        const on = j === i;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+      });
+      sheets.forEach((s, j) => {
+        s.hidden = j !== i;
+        s.classList.toggle('is-active', j === i);
+      });
+      if (focus) tabs[i].focus();
+    };
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => select(i));
+      t.addEventListener('keydown', (e) => {
+        const step = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[e.key];
+        if (!step) return;
+        e.preventDefault();
+        select((i + step + tabs.length) % tabs.length, true);
+      });
+    });
+  }
+</script>

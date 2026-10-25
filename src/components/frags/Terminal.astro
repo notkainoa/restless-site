@@ -1,0 +1,17 @@
+---
+// A Terminal window. The slot is literal terminal output, so it sits in
+// <pre><code>; spans with .p .d .ok .hi colour the prompt, dim, success, bright.
+interface Props {
+  title: string;
+  width?: number;
+}
+const { title, width = 560 } = Astro.props;
+---
+
+<div class="ui-window" style={`width:${width}px`}>
+  <div class="ui-titlebar">
+    <span class="ui-lights" aria-hidden="true"><span></span><span></span><span></span></span>
+    <span class="ui-title">{title}</span>
+  </div>
+  <pre class="ui-term"><code><slot /></code></pre>
+</div>
