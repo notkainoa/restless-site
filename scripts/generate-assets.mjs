@@ -85,7 +85,7 @@ const touchSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024
 await writeFile(pub('apple-touch-icon.png'), png(touchSvg, 180));
 
 // -------------------------------------------------------------------- og.png
-// The site's own look: green-black ground, bone type, the hero headline,
+// The site's own look: near-black ground, off-white type, the hero headline,
 // and the 1865 moon (public domain, Lewis Morris Rutherfurd) on the right.
 const font = (weight) =>
   readFile(require.resolve(`@fontsource/hanken-grotesk/files/hanken-grotesk-latin-${weight}-normal.woff`));
@@ -102,9 +102,9 @@ const og = await satori(
       width: '100%',
       height: '100%',
       display: 'flex',
-      backgroundColor: '#161c1a',
+      backgroundColor: '#0e0e11',
       fontFamily: 'Hanken Grotesk',
-      color: '#e3e2da',
+      color: '#e8e7ee',
     },
     h(
       'div',
@@ -129,7 +129,7 @@ const og = await satori(
       ),
       h(
         'div',
-        { fontSize: 28, fontWeight: 400, lineHeight: 1.35, color: '#e3e2da', maxWidth: 560 },
+        { fontSize: 28, fontWeight: 400, lineHeight: 1.35, color: '#e8e7ee', maxWidth: 560 },
         'A macOS menu bar app that keeps your Mac awake with the lid closed.',
       ),
     ),
