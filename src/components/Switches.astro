@@ -1,9 +1,7 @@
 ---
 // "Sentences with switches": the panel's five settings, each said as a
 // sentence that ends in the product's own switch. Flip one and its band
-// fills, the consequence appears, and the menu bar eye and status line above
-// change exactly as they do in the app. Lid open and lid closed start on.
-import MenuBar from './frags/MenuBar.astro';
+// fills and the consequence appears. Lid open and lid closed start on.
 
 const bands = [
   {
@@ -39,19 +37,8 @@ const bands = [
 ] as const;
 ---
 
-<section id="switches" class="switches" aria-labelledby="switches-title" data-switches data-glyph-state="eye-fill">
-  <div class="top wrap">
-    <h2 id="switches-title" class="head" data-reveal>Five switches</h2>
-    <div class="live" data-reveal style="--i:1">
-      <div class="live-ui" data-ui>
-        <MenuBar time="Fri 11:41 PM" battery={86} live />
-        <div class="live-status" aria-live="polite">
-          <span class="ui-status-title" data-title>Awake with the lid closed</span>
-          <span class="ui-status-sub" data-sub>When shut: screen on, unlocked</span>
-        </div>
-      </div>
-    </div>
-  </div>
+<section id="switches" class="switches" aria-labelledby="switches-title" data-switches>
+  <h2 id="switches-title" class="head wrap" data-reveal>Five switches</h2>
 
   <ul class="bands">
     {
@@ -87,33 +74,8 @@ const bands = [
     padding-top: clamp(7rem, 14vw, 13rem);
   }
 
-  .top {
-    display: grid;
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    column-gap: var(--gutter);
-    align-items: end;
+  h2 {
     margin-bottom: clamp(2rem, 4vw, 3.5rem);
-  }
-
-  .top h2 {
-    grid-column: 1 / span 6;
-  }
-
-  .live {
-    grid-column: 8 / span 5;
-    justify-self: end;
-  }
-
-  .live-ui {
-    width: 340px;
-    border-radius: 10px;
-    overflow: clip;
-    background: #1e1e1e;
-  }
-
-  .live-status {
-    display: grid;
-    padding: 10px 14px 12px;
   }
 
   .bands {
@@ -195,19 +157,6 @@ const bands = [
   }
 
   @media (max-width: 899px) {
-    .top {
-      display: block;
-    }
-
-    .live {
-      margin-top: 1.5rem;
-    }
-
-    .live-ui {
-      width: 100%;
-      max-width: 340px;
-    }
-
     .band-inner {
       min-height: 132px;
     }
@@ -235,40 +184,12 @@ const bands = [
 </style>
 
 <script>
-  // Status rules from the app's panel (Sources/Panel/PanelViews.swift).
   const root = document.querySelector<HTMLElement>('[data-switches]');
-  if (root) {
-    const state: Record<string, boolean> = {};
-    const switches = [...root.querySelectorAll<HTMLButtonElement>('[data-key]')];
-    const title = root.querySelector<HTMLElement>('[data-title]')!;
-    const sub = root.querySelector<HTMLElement>('[data-sub]')!;
-    switches.forEach((s) => (state[s.dataset.key!] = s.getAttribute('aria-checked') === 'true'));
-
-    const render = () => {
-      for (const s of switches) {
-        const on = state[s.dataset.key!];
-        s.setAttribute('aria-checked', String(on));
-        s.closest('[data-band]')?.classList.toggle('is-on', on);
-      }
-      root.dataset.glyphState = state.lidClosed ? 'eye-fill' : state.lidOpen ? 'eye' : 'eye-slash';
-      if (state.lidClosed) {
-        title.textContent = 'Awake with the lid closed';
-        sub.textContent = `When shut: ${state.sleepDisplay ? 'screen off' : 'screen on'}, ${state.lockScreen ? 'locked' : 'unlocked'}`;
-      } else if (state.lidOpen) {
-        title.textContent = 'Awake';
-        sub.textContent = 'Your Mac and screen stay on';
-      } else {
-        title.textContent = 'Sleep allowed';
-        sub.textContent = 'Your Mac sleeps as usual';
-      }
-    };
-
-    switches.forEach((s) =>
-      s.addEventListener('click', () => {
-        state[s.dataset.key!] = !state[s.dataset.key!];
-        render();
-      }),
-    );
-    render();
-  }
+  root?.querySelectorAll<HTMLButtonElement>('[data-key]').forEach((s) =>
+    s.addEventListener('click', () => {
+      const on = s.getAttribute('aria-checked') !== 'true';
+      s.setAttribute('aria-checked', String(on));
+      s.closest('[data-band]')?.classList.toggle('is-on', on);
+    }),
+  );
 </script>
