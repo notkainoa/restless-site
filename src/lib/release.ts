@@ -120,7 +120,7 @@ export interface Release {
   assetName: string;
   /** Release notes page for this version. */
   notesUrl: string;
-  /** Where the Download button points. Always the latest release. */
+  /** Where the Download button points: the download page. */
   downloadUrl: string;
 }
 
@@ -132,6 +132,6 @@ export async function getLatestRelease(): Promise<Release> {
     version,
     assetName: `Restless-${version}.zip`,
     notesUrl: latest?.notesUrl ?? `${REPO_URL}/releases/tag/v${version}`,
-    downloadUrl: LATEST_URL,
+    downloadUrl: DOWNLOAD_PAGE,
   };
 }
