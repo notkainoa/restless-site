@@ -1,8 +1,6 @@
 ---
-// "First step, already open": the page ends on the accent field with
-// Restless as it first opens, every switch off, and the one action.
-import Panel from './frags/Panel.astro';
-import MenuBar from './frags/MenuBar.astro';
+// The close: the download on the accent field, and the facts that make it
+// safe to install.
 import { REPO_URL, type Release } from '../lib/release';
 
 interface Props {
@@ -29,10 +27,13 @@ const { release } = Astro.props;
       </p>
     </div>
 
-    <div class="first-run" data-ui data-reveal style="--i:2">
-      <MenuBar time="Fri 9:02 PM" battery={100} glyph="eye-slash" open />
-      <div class="drop"><Panel percent={100} sleepDisplay={false} lockScreen={false} battery={false} /></div>
-    </div>
+    <ul class="facts" data-reveal style="--i:2" aria-label="About the download">
+      <li>Signed with a Developer ID</li>
+      <li>Notarized by Apple</li>
+      <li>Open source, MIT</li>
+      <li>Updates itself with Sparkle</li>
+      <li>macOS 26 or newer</li>
+    </ul>
   </div>
 </section>
 
@@ -48,8 +49,7 @@ const { release } = Astro.props;
     grid-template-columns: repeat(12, minmax(0, 1fr));
     column-gap: var(--gutter);
     align-items: center;
-    min-height: 80svh;
-    padding-block: 4rem;
+    padding-block: clamp(4rem, 9vw, 8rem);
   }
 
   .words {
@@ -95,19 +95,15 @@ const { release } = Astro.props;
     font-size: var(--step-small);
   }
 
-  .first-run {
-    grid-column: 8 / span 4;
-    justify-self: end;
-    width: 360px;
-    border-radius: 10px;
-    overflow: clip;
-    background: #1e1e1e;
-  }
-
-  .drop {
-    display: flex;
-    justify-content: flex-end;
-    padding: 6px 10px 10px;
+  .facts {
+    grid-column: 8 / span 5;
+    align-self: end;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--step-lead);
+    line-height: 1.4;
+    letter-spacing: -0.015em;
   }
 
   @media (max-width: 899px) {
@@ -115,7 +111,6 @@ const { release } = Astro.props;
       display: flex;
       flex-direction: column;
       align-items: stretch;
-      min-height: 84svh;
       gap: 2.5rem;
       padding-block: 3rem;
     }
@@ -124,18 +119,9 @@ const { release } = Astro.props;
       font-size: var(--step-display);
     }
 
-    .words {
+    .words,
+    .facts {
       align-self: stretch;
-    }
-
-    .first-run {
-      width: 100%;
-      max-width: 360px;
-      align-self: flex-start;
-    }
-
-    .drop {
-      justify-content: flex-start;
     }
 
     .actions .button {

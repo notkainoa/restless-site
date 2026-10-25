@@ -1,9 +1,7 @@
 ---
-// Hero: "Sentence split by a frame". The headline's two halves hold the
-// edges while one night on a closed MacBook passes through the frame
-// between them, from the lid coming down at 11:41 pm to a finished build.
+// Hero: the headline split around one frame showing Restless at 11:41 pm,
+// the panel open over a build that's about to run with the lid shut.
 import EyeMark from './EyeMark.astro';
-import Chevron from './Chevron.astro';
 import MenuBar from './frags/MenuBar.astro';
 import Panel from './frags/Panel.astro';
 import Terminal from './frags/Terminal.astro';
@@ -15,110 +13,59 @@ interface Props {
 const { release } = Astro.props;
 ---
 
-<section id="top" class="hero" data-hero>
-  <div class="stage">
-    <header class="nav wrap" data-load style="--d:0ms">
-      <a href="#top" class="mark" aria-label="Restless, back to top">
-        <EyeMark id="nav" size={28} />
-        <span>Restless</span>
-      </a>
-      <nav aria-label="Site" class="nav-links">
-        <a class="plain-link hide-phone" href="#how">How it works</a>
-        <a class="plain-link" href={REPO_URL}>GitHub</a>
-        <a class="button button-sm" href={release.downloadUrl}>Download for Mac</a>
-      </nav>
-    </header>
+<section id="top" class="hero">
+  <header class="nav wrap" data-load style="--d:0ms">
+    <a href="#top" class="mark" aria-label="Restless, back to top">
+      <EyeMark id="nav" size={28} />
+      <span>Restless</span>
+    </a>
+    <nav aria-label="Site" class="nav-links">
+      <a class="plain-link" href={REPO_URL}>GitHub</a>
+      <a class="button button-sm" href={release.downloadUrl}>Download for Mac</a>
+    </nav>
+  </header>
 
+  <div class="stage wrap">
     <h1 class="split head">
       <span class="half first"><span class="mask"><span data-line style="--i:0">Lid shut.</span></span></span>
-      <span class="spacer" aria-hidden="true"></span>
       <span class="half second"><span class="mask"><span data-line style="--i:1">Still running.</span></span></span>
     </h1>
 
-    <div class="window" aria-label="One night on a closed MacBook" role="group">
-      <ol class="reel" data-reel>
-        <li class="frame is-active" data-frame data-ui>
-          <div class="desk">
-            <MenuBar time="Fri 11:41 PM" battery={86} glyph="eye-fill" open />
-            <div class="desk-work">
-              <Terminal title="release — make — 96×24" width={430}><span class="d">Last login: Fri Oct 23 23:38:02 on ttys001</span>
+    <div class="frame" data-ui data-load style="--d:200ms">
+      <MenuBar time="Fri 11:41 PM" battery={86} glyph="eye-fill" open />
+      <div class="desk-work">
+        <Terminal title="release — make — 96×24" width={430}><span class="d">Last login: Fri Oct 23 23:38:02 on ttys001</span>
 <span class="p">dev@MacBook-Pro release %</span> make release
 <span class="d">23:41:07</span>  [   1/1284] Resolving packages
 <span class="d">23:41:31</span>  [   9/1284] Fetching swift-argument-parser
 <span class="d">23:41:52</span>  [  22/1284] Compiling Shared</Terminal>
-            </div>
-            <div class="desk-panel"><Panel lidOpen lidClosed percent={86} /></div>
-          </div>
-        </li>
-        <li class="frame photo" data-frame>
-          <img
-            src="/media/moon-1865.jpg"
-            width="1300"
-            height="1712"
-            alt="The full moon, its craters sharp against black, in a photograph taken from New York in 1865."
-            class="moon"
-          />
-        </li>
-        <li class="frame" data-frame data-ui>
-          <div class="desk term-desk">
-            <Terminal title="release — make — 96×24" width={620}><span class="d">Last login: Fri Oct 23 23:38:02 on ttys001</span>
-<span class="p">dev@MacBook-Pro release %</span> make release
-<span class="d">23:41:07</span>  [   1/1284] Resolving packages
-<span class="d">00:20:44</span>  [ 214/1284] Compiling SleepController.swift
-<span class="d">00:47:13</span>  [ 523/1284] Compiling PanelViews.swift
-<span class="d">01:05:30</span>  [ 688/1284] Compiling HelperService.swift
-<span class="d">01:12:41</span>  [ 797/1284] Linking RestlessHelper  <span class="hi">62%</span></Terminal>
-          </div>
-        </li>
-        <li class="frame" data-frame data-ui>
-          <div class="desk term-desk">
-            <Terminal title="release — zsh — 96×24" width={620}><span class="d">02:51:18</span>  [1201/1284] Compiling Updater.swift
-<span class="d">03:11:52</span>  [1284/1284] Linking Restless.app
-<span class="ok">Built 1,284 targets in 3h 31m.</span>
-<span class="p">dev@MacBook-Pro release %</span> pmset -g | grep SleepDisabled
- SleepDisabled		1
-<span class="p">dev@MacBook-Pro release %</span> <span class="cursor"></span></Terminal>
-          </div>
-        </li>
-      </ol>
+      </div>
+      <div class="desk-panel"><Panel lidOpen lidClosed percent={86} /></div>
     </div>
+  </div>
 
-    <div class="captions">
-      <p class="cap is-active" data-caption>11:41 pm. Lid Closed <Chevron /> Keep Awake is on, and the lid comes down.</p>
-      <p class="cap" data-caption>Midnight. The moon over New York, photographed by Lewis Rutherfurd in 1865.</p>
-      <p class="cap" data-caption>1:12 am. The build is at 62% on a closed MacBook.</p>
-      <p class="cap" data-caption>3:12 am. Built, and pmset still reports SleepDisabled&nbsp;1.</p>
-      <span class="count" data-count aria-hidden="true">1 of 4</span>
-    </div>
-
-    <p class="sentence" data-load style="--d:420ms">
-      Restless is a menu bar app that keeps your Mac awake with the lid closed, so builds, downloads,
-      SSH sessions and AI agents keep running.
+  <div class="foot wrap" data-load style="--d:420ms">
+    <p class="sentence">
+      Restless is a menu bar app that keeps your Mac awake with the lid closed, so builds, downloads, SSH sessions
+      and AI agents keep running.
     </p>
+    <a class="button" href={release.downloadUrl}>Download for Mac</a>
   </div>
 </section>
 
 <style>
-  /* ---------- the held stage ---------- */
   .hero {
-    --frames: 4;
-    --fw: 46vw;
-    --fh: calc(var(--fw) * 9 / 16);
-    --sliver: 60px;
-    position: relative;
-    height: calc(100svh + (var(--frames) - 1) * 45svh);
+    display: flex;
+    flex-direction: column;
+    min-height: 100svh;
   }
 
-  .stage {
-    position: sticky;
-    top: 0;
-    height: 100svh;
-    overflow: clip;
+  /* Auto side margins would shrink flex children to their content. */
+  .hero > .wrap {
+    width: 100%;
   }
 
   .nav {
-    position: relative;
-    z-index: 2;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -142,14 +89,22 @@ const { release } = Astro.props;
     gap: clamp(1rem, 2vw, 1.75rem);
   }
 
-  /* ---------- headline halves ---------- */
+  /* The halves hold the edges; the frame sits between them. */
+  .stage {
+    --fw: min(46vw, 44rem);
+    position: relative;
+    flex: 1;
+    display: grid;
+    place-items: center;
+    padding-block: 2rem;
+  }
+
   .split {
     position: absolute;
-    inset: 50% 0 auto;
-    z-index: 1;
+    inset: 50% var(--margin) auto;
     display: flex;
     justify-content: space-between;
-    padding-inline: var(--margin);
+    z-index: 1;
     transform: translateY(-50%);
     font-size: clamp(2.5rem, 3.9vw, 4rem);
     line-height: 0.95;
@@ -160,63 +115,19 @@ const { release } = Astro.props;
     max-width: calc((100vw - var(--fw)) / 2 - var(--margin) - 1.5rem);
   }
 
-  .spacer {
-    display: none;
-  }
-
   .mask {
     display: block;
     overflow: clip;
     padding-bottom: 0.08em;
   }
 
-  /* ---------- the window and its reel ---------- */
-  .window {
-    position: absolute;
-    inset: 0 auto 0 50%;
-    width: var(--fw);
-    translate: -50% 0;
-    overflow: clip;
-  }
-
-  .reel {
-    position: absolute;
-    inset: calc(50% - var(--fh) / 2) 0 auto;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    /* Neighbours show as slivers at the window's top and bottom edges. */
-    row-gap: calc((100svh - var(--fh)) / 2 - var(--sliver));
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    will-change: transform;
-  }
-
   .frame {
     position: relative;
-    height: var(--fh);
+    width: var(--fw);
+    aspect-ratio: 16 / 9;
     border-radius: var(--radius);
     background: var(--surface);
     overflow: clip;
-  }
-
-  .frame.photo {
-    background: #050607;
-  }
-
-  .frame img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .frame img.moon {
-    object-position: 50% 42%;
-  }
-
-  .desk {
-    position: relative;
-    height: 100%;
   }
 
   .desk-work {
@@ -232,96 +143,39 @@ const { release } = Astro.props;
     padding: 6px 14px 0;
   }
 
-  .term-desk {
-    padding: 18px 0 0 18px;
-  }
-
-  /* ---------- captions ---------- */
-  .captions {
-    position: absolute;
-    left: 50%;
-    top: calc(50% + var(--fh) / 2 + 1rem);
-    width: var(--fw);
-    translate: -50% 0;
-    display: grid;
-    grid-template-columns: 1fr auto;
-    column-gap: 1rem;
-    font-size: var(--step-small);
-    color: var(--muted);
-  }
-
-  .cap {
-    grid-area: 1 / 1;
-    opacity: 0;
-    transition: opacity 300ms ease;
-  }
-
-  .cap.is-active {
-    opacity: 1;
-  }
-
-  .count {
-    grid-area: 1 / 2;
-    font-variant-numeric: tabular-nums;
+  .foot {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 2rem;
+    padding-bottom: 2rem;
   }
 
   .sentence {
-    position: absolute;
-    left: var(--margin);
-    bottom: 2rem;
-    max-width: min(30ch + 4rem, calc((100vw - var(--fw)) / 2 - var(--margin) - 1.5rem));
+    max-width: 34ch;
     font-size: var(--step-body);
     line-height: 1.45;
   }
 
-  /* ---------- reduced motion: frames swap in place ---------- */
-  @media (prefers-reduced-motion: reduce) {
-    .reel {
-      display: block;
-    }
-
-    .frame {
-      display: none;
-    }
-
-    .frame.is-active {
-      display: block;
-      animation: frame-in 300ms ease;
-    }
-
-    .cap:not(.is-active) {
-      display: none;
-    }
-
-    @keyframes frame-in {
-      from {
-        opacity: 0;
-      }
-    }
-  }
-
-  /* ---------- phone and narrow tablet: a second composition ---------- */
+  /* Phone and narrow tablet: the headline sits above the frame. */
   @media (max-width: 899px) {
     .hero {
-      --fw: calc(100vw - 2 * var(--margin));
-      --fh: calc(var(--fw) * 9 / 16);
-      --sliver: 28px;
-      --winh: calc(var(--fh) + 2 * (var(--sliver) + 12px));
-      height: calc(100svh + (var(--frames) - 1) * 40svh);
+      min-height: auto;
     }
 
-    .hide-phone {
-      display: none;
+    .stage {
+      --fw: 100%;
+      display: block;
+      place-items: normal;
+      padding-block: 0.5rem 1.5rem;
     }
 
-    /* The halves stack with the window between them: the h1 keeps one box,
-       and a spacer inside it makes room for the window laid over it. */
     .split {
       position: static;
       display: grid;
       grid-template-columns: minmax(0, 1fr);
+      justify-content: normal;
       transform: none;
-      margin-top: 0.5rem;
       font-size: var(--step-head);
     }
 
@@ -333,49 +187,29 @@ const { release } = Astro.props;
       text-align: right;
     }
 
-    .spacer {
-      display: block;
-      height: calc(var(--winh) + 1.5rem);
+    .frame {
+      margin-top: 1.25rem;
     }
 
-    .window {
-      inset: auto var(--margin);
-      top: calc(4.5rem + 0.5rem + var(--step-head) * 1.03 + 0.75rem);
-      width: auto;
-      height: var(--winh);
-      translate: none;
+    .foot {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1.25rem;
     }
 
-    .reel {
-      top: calc(var(--sliver) + 12px);
-      row-gap: 12px;
-    }
-
-    .captions {
-      position: static;
-      translate: none;
-      width: auto;
-      padding-inline: var(--margin);
-      margin-top: 1rem;
-    }
-
-    .sentence {
-      position: static;
-      max-width: 40ch;
-      padding-inline: var(--margin);
-      margin-top: 0.75rem;
+    .foot .button {
+      min-height: 52px;
     }
   }
 
   @media (max-width: 599px) {
-    .hero {
-      --fh: calc(var(--fw) * 3 / 4);
+    .frame {
+      aspect-ratio: 4 / 3;
+    }
+
+    /* The panel covers the frame on a phone; no sliver of Terminal behind it. */
+    .desk-work {
+      display: none;
     }
   }
 </style>
-
-<script>
-  import { initReel } from '../scripts/reel';
-  const hero = document.querySelector<HTMLElement>('[data-hero]');
-  if (hero) initReel(hero);
-</script>

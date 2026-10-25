@@ -1,12 +1,9 @@
 ---
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
-import Showcase from '../components/Showcase.astro';
 import Switches from '../components/Switches.astro';
-import HowItWorks from '../components/HowItWorks.astro';
-import Proof from '../components/Proof.astro';
+import Approve from '../components/Approve.astro';
 import Closing from '../components/Closing.astro';
-import Night from '../components/Night.astro';
 import Footer from '../components/Footer.astro';
 import { getLatestRelease } from '../lib/release';
 
@@ -19,12 +16,9 @@ const release = await getLatestRelease();
 >
   <main id="main">
     <Hero release={release} />
-    <Showcase />
     <Switches />
-    <HowItWorks version={release.version} />
-    <Proof />
+    <Approve />
     <Closing release={release} />
-    <Night />
   </main>
   <Footer />
 </Base>
