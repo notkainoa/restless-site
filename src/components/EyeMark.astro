@@ -1,7 +1,7 @@
 ---
 // The Restless app icon as inline SVG, geometry and colours copied from
-// icon/restless-dark.svg in the app repo: a sage eye with a pale mint moon on
-// a black tile.
+// icon/restless-dark.svg in the app repo. The page's accent and deep indigo
+// are taken from these same colours.
 interface Props {
   id: string;
   size?: number | string;
@@ -31,15 +31,15 @@ const LOWER =
 >
   <defs>
     <linearGradient id={tile} gradientUnits="userSpaceOnUse" x1="0" y1="96" x2="0" y2="928">
-      <stop offset="0" stop-color="#1e201f"></stop>
-      <stop offset="0.509" stop-color="#171918"></stop>
-      <stop offset="1" stop-color="#101211"></stop>
+      <stop offset="0" stop-color="#251d6c"></stop>
+      <stop offset="0.509" stop-color="#1e1755"></stop>
+      <stop offset="1" stop-color="#181246"></stop>
     </linearGradient>
   </defs>
   <rect x="96" y="96" width="832" height="832" rx="196" ry="196" fill={`url(#${tile})`}></rect>
-  <path fill="#9fc7b8" d={LOWER}></path>
-  <path fill="#9fc7b8" d={UPPER}></path>
-  <circle fill="#d6e9e1" cx="511.31" cy="522.4" r="119.5"></circle>
+  <path fill="#8572fb" d={LOWER}></path>
+  <path fill="#8370fa" d={UPPER}></path>
+  <circle fill="#a998fd" cx="511.31" cy="522.4" r="119.5"></circle>
 </svg>
 
 <style>

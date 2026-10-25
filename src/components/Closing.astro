@@ -1,6 +1,6 @@
 ---
-// The close: the download on the accent field, and the facts that make it
-// safe to install.
+// The close: the download on the deep indigo of the icon's tile, and the
+// facts that make it safe to install.
 import { REPO_URL, type Release } from '../lib/release';
 
 interface Props {
@@ -18,7 +18,7 @@ const { release } = Astro.props;
         nothing changes until you flip one.
       </p>
       <div class="actions" data-reveal style="--i:2">
-        <a class="button dark" href={release.downloadUrl}>Download for Mac</a>
+        <a class="button" href={release.downloadUrl}>Download for Mac</a>
         <a class="link" href={release.notesUrl}>Release notes</a>
       </div>
       <p class="amped" data-reveal style="--i:3">
@@ -40,13 +40,8 @@ const { release } = Astro.props;
 <style>
   .closing {
     margin-top: clamp(6rem, 10vw, 9rem);
-    background: var(--accent);
-    color: var(--accent-ink);
-  }
-
-  /* The page's accent focus ring would vanish on the accent field. */
-  .closing :focus-visible {
-    outline-color: var(--accent-ink);
+    background: var(--deep);
+    color: var(--ink);
   }
 
   .field {
@@ -81,17 +76,6 @@ const { release } = Astro.props;
     align-items: center;
     gap: 1.25rem;
     margin-top: 1.75rem;
-  }
-
-  .button.dark {
-    background: var(--accent-ink);
-    color: var(--ink);
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    .button.dark:hover {
-      background: #000;
-    }
   }
 
   .amped {

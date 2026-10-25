@@ -70,11 +70,11 @@ If the domain changes, edit that line and redeploy.
 npm run assets
 ```
 
-That regenerates `favicon.svg`, `favicon.ico`, `apple-touch-icon.png` and the 1200×630 `og.png`. The outputs are committed, so builds don't run this step.
+That regenerates `favicon.svg`, `favicon.ico`, `apple-touch-icon.png` and the 1200×630 `og.png`. The outputs are committed, so builds don't run this step. `astro.config.mjs` hashes those three icon files into the links in `src/layouts/Base.astro`, so a browser fetches the new favicon instead of keeping the old one.
 
 ## Design
 
-The home page has four parts, nothing else: the hero ("Lid shut." / "Still running." either side of the Restless panel at 11:41 pm), the five settings as sentences with working switches, one paragraph on approving the helper, and the download. Dark only, one typeface (Hanken Grotesk, self-hosted), a green-black and bone palette with one accent on the download action; the violet app icon is the only purple. The look came out of a pass with [tasteskill v2](https://www.tasteskill.dev/) and was then cut back to the essentials.
+The home page has four parts, nothing else: the hero ("Lid shut." / "Still running." either side of the Restless panel at 11:41 pm), the five settings as sentences with working switches, one paragraph on approving the helper, and the download. Dark only, one typeface (Hanken Grotesk, self-hosted). The palette is neutral: sections alternate between a near-black (`--bg`) and a dark gray (`--bg-alt`), with the app icon's violet (`--accent`) on the download action, links and focus rings, and its deep indigo (`--deep`) under the closing download. Use the variables in `src/styles/global.css` (or their Tailwind names, like `bg-bg-alt` and `text-accent`) rather than hard-coded colors. The look came out of a pass with [tasteskill v2](https://www.tasteskill.dev/) and was then cut back to the essentials.
 
 The panel, menu bar and Terminal in the hero are built in HTML from the app's own strings (`src/components/frags/`, styled by `src/styles/ui.css` under `[data-ui]`). The Terminal output is sample content.
 
