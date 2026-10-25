@@ -35,10 +35,10 @@ Or from the command line: `npx vercel` for a preview, `npx vercel --prod` for pr
 Absolute URLs (the canonical link and the Open Graph and Twitter image) are all built from one setting, line 8 of `astro.config.mjs`:
 
 ```js
-  site: 'https://restless-site.vercel.app',
+  site: 'https://restless.kainoa.me',
 ```
 
-When the site moves to its own domain, change that line and redeploy.
+If the domain changes, edit that line and redeploy.
 
 ## Brand assets
 
