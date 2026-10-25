@@ -3,6 +3,7 @@
 // The eye glyphs stand in for the SF Symbols the app uses in the menu bar.
 export type IconName =
   | 'arrow-right'
+  | 'arrow-down'
   | 'arrow-up-right'
   | 'download'
   | 'github'
@@ -52,6 +53,7 @@ const { name, size = 18, class: className, label } = Astro.props;
   focusable="false"
 >
   {name === 'arrow-right' && <path d="M5 12h14M13 6l6 6-6 6" />}
+  {name === 'arrow-down' && <path d="M12 5v14M6 13l6 6 6-6" />}
   {name === 'arrow-up-right' && <path d="M7 17 17 7M8 7h9v9" />}
   {name === 'download' && <path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19.5h14" />}
   {
