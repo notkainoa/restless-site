@@ -31,7 +31,14 @@ const { release } = Astro.props;
       <span class="half second"><span class="mask"><span data-line style="--i:1">Still running.</span></span></span>
     </h1>
 
-    <div class="frame" data-ui data-load style="--d:200ms">
+    <div
+      class="frame"
+      data-ui
+      data-load
+      style="--d:200ms"
+      role="img"
+      aria-label="The Restless panel open from the menu bar at 11:41 PM, reading Awake with the lid closed, over a Terminal window starting make release."
+    >
       <MenuBar time="Fri 11:41 PM" battery={86} glyph="eye-fill" open />
       <div class="desk-work">
         <Terminal title="release — make — 96×24" width={430}><span class="d">Last login: Fri Oct 23 23:38:02 on ttys001</span>

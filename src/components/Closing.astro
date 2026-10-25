@@ -44,6 +44,11 @@ const { release } = Astro.props;
     color: var(--accent-ink);
   }
 
+  /* The page's accent focus ring would vanish on the accent field. */
+  .closing :focus-visible {
+    outline-color: var(--accent-ink);
+  }
+
   .field {
     display: grid;
     grid-template-columns: repeat(12, minmax(0, 1fr));

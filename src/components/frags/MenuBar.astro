@@ -15,7 +15,7 @@ const glyphs = live ? (['eye-slash', 'eye', 'eye-fill'] as const) : [glyph];
 ---
 
 <div class="ui-menubar">
-  <span class:list={['ui-glyph', { 'is-open': open }]} aria-label="Restless">
+  <span class:list={['ui-glyph', { 'is-open': open }]} role="img" aria-label="Restless">
     {
       glyphs.map((g) => (
         <span class="mb-g" data-glyph={g}>
