@@ -19,12 +19,12 @@ const { assetName } = Astro.props;
       <div class="pair">
         <figure>
           <svg class="file" viewBox="0 0 52 64" width="52" height="64">
-            <path d="M5 1h29l17 17v41a4 4 0 0 1-4 4H5a4 4 0 0 1-4-4V5a4 4 0 0 1 4-4Z" fill="#e6e5df"></path>
-            <path d="M34 1v13a4 4 0 0 0 4 4h13Z" fill="#c4c3bc"></path>
+            <path d="M5 1h29l17 17v41a4 4 0 0 1-4 4H5a4 4 0 0 1-4-4V5a4 4 0 0 1 4-4Z" class="sheet"></path>
+            <path d="M34 1v13a4 4 0 0 0 4 4h13Z" class="fold"></path>
             <path
               d="M24 4h4v3h-4zM28 7h4v3h-4zM24 10h4v3h-4zM28 13h4v3h-4zM24 16h4v3h-4zM28 19h4v3h-4zM24 22h4v3h-4z"
-              fill="#7d7c76"></path>
-            <rect x="23.5" y="27" width="9" height="11" rx="2" fill="none" stroke="#7d7c76" stroke-width="1.6"></rect>
+              class="zip"></path>
+            <rect x="23.5" y="27" width="9" height="11" rx="2" class="pull"></rect>
           </svg>
           <figcaption data-latest="assetName">{assetName}</figcaption>
         </figure>
@@ -51,13 +51,11 @@ const { assetName } = Astro.props;
         <span class="to"><Icon name="arrow-right" size={20} /></span>
         <figure>
           <svg class="folder" viewBox="0 0 64 52" width="72" height="58">
-            <path d="M2 8a4 4 0 0 1 4-4h15.5a4 4 0 0 1 2.8 1.2L28 9h30a4 4 0 0 1 4 4v4H2Z" fill="#3d8fdb"></path>
-            <rect x="2" y="12" width="60" height="38" rx="4" fill="#5eaaee"></rect>
+            <path d="M2 8a4 4 0 0 1 4-4h15.5a4 4 0 0 1 2.8 1.2L28 9h30a4 4 0 0 1 4 4v4H2Z" class="tab"></path>
+            <rect x="2" y="12" width="60" height="38" rx="4" class="front"></rect>
             <path
               d="M25.5 41.5 32 25l6.5 16.5M27.9 35.5h8.2"
-              fill="none"
-              stroke="#2c78c4"
-              stroke-width="2.6"
+              class="glyph"
               stroke-linecap="round"
               stroke-linejoin="round"></path>
           </svg>
@@ -122,8 +120,40 @@ const { assetName } = Astro.props;
     align-self: end;
   }
 
+  /* The zip and the folder use the product palette from ui.css (the
+     macOS folder is the system's blue), so they stay put whatever the
+     page's theme. */
+  .sheet {
+    fill: var(--ui-text);
+  }
+
+  .fold,
+  .zip {
+    fill: var(--ui-text-2);
+  }
+
+  .pull {
+    fill: none;
+    stroke: var(--ui-text-2);
+    stroke-width: 1.6;
+  }
+
   .folder {
     margin-top: 6px;
+  }
+
+  .tab {
+    fill: color-mix(in srgb, var(--ui-blue) 80%, white);
+  }
+
+  .front {
+    fill: color-mix(in srgb, var(--ui-blue) 62%, white);
+  }
+
+  .glyph {
+    fill: none;
+    stroke: var(--ui-blue);
+    stroke-width: 2.6;
   }
 
   figcaption {

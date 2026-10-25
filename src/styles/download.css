@@ -1,0 +1,15 @@
+/* The download page's second action ("All versions", older releases'
+   Download): a button on the page's own surface, beside the accent one.
+   Built only from the shared tokens, so it follows any theme. */
+@layer components {
+  .button.quiet {
+    background: var(--surface);
+    color: var(--ink);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .button.quiet:hover {
+      background: color-mix(in srgb, var(--ink) 8%, var(--surface));
+    }
+  }
+}
