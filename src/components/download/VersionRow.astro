@@ -1,0 +1,127 @@
+---
+// One release in the All versions list. Rendered at build time for each
+// release, and once empty inside a <template> so the page can rebuild the
+// list from /api/releases. The script fills the [data-f] fields.
+import type { RestlessRelease } from '../../lib/release';
+import { formatDate, formatSize } from '../../lib/format';
+
+interface Props {
+  release?: RestlessRelease;
+  latest?: boolean;
+}
+const { release, latest = false } = Astro.props;
+---
+
+<li class:list={['row', { 'is-latest': latest }]}>
+  <div class="row-inner wrap">
+    <p class="ver">
+      <span data-f="version">{release?.version}</span>
+      <span class="tag" data-f="latest" hidden={!latest}>Latest</span>
+    </p>
+    <p class="meta">
+      <time data-f="date" datetime={release?.publishedAt}>{release && formatDate(release.publishedAt)}</time>
+      <span aria-hidden="true">·</span>
+      <span data-f="size">{release && formatSize(release.size)}</span>
+    </p>
+    <a class="link notes" data-f="notes" href={release?.notesUrl}>Release notes</a>
+    <a
+      class:list={['button', 'button-sm', 'get', { quiet: !latest }]}
+      data-f="url"
+      href={release?.url}
+      aria-label={release && `Download Restless ${release.version}`}>Download</a
+    >
+  </div>
+</li>
+
+<style>
+  .row {
+    background: var(--bg);
+  }
+
+  /* The latest sits on its own band, the way a switched-on setting does. */
+  .row.is-latest {
+    background: var(--surface);
+  }
+
+  .row-inner {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--gutter);
+    align-items: center;
+    min-height: 8rem;
+    padding-block: 1.5rem;
+  }
+
+  .ver {
+    grid-column: 1 / span 4;
+    display: flex;
+    align-items: baseline;
+    gap: 0.9rem;
+    font-size: clamp(1.875rem, 3.6vw, 3.75rem);
+    line-height: 1;
+    letter-spacing: -0.045em;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    color: var(--muted);
+  }
+
+  .is-latest .ver {
+    color: var(--ink);
+  }
+
+  .tag {
+    font-size: var(--step-small);
+    letter-spacing: 0;
+    font-weight: 400;
+    color: var(--muted);
+  }
+
+  .meta {
+    grid-column: 5 / span 4;
+    display: flex;
+    gap: 0.5em;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .notes {
+    grid-column: 9 / span 2;
+    justify-self: start;
+  }
+
+  .get {
+    grid-column: 11 / span 2;
+    justify-self: end;
+  }
+
+  @media (max-width: 899px) {
+    .row-inner {
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-areas:
+        'ver ver'
+        'meta meta'
+        'notes get';
+      row-gap: 0.75rem;
+      min-height: 0;
+    }
+
+    .ver {
+      grid-area: ver;
+      font-size: var(--step-head);
+    }
+
+    .meta {
+      grid-area: meta;
+    }
+
+    .notes {
+      grid-area: notes;
+    }
+
+    .get {
+      grid-area: get;
+      margin-top: 0.5rem;
+      min-height: 2.75rem;
+    }
+  }
+</style>

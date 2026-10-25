@@ -1,0 +1,264 @@
+---
+// /download: starts the download on a Mac, then shows how to install, a
+// retry, and every version. Prerendered like the rest of the site; the
+// download itself goes through /download/latest.
+import Base from '../../layouts/Base.astro';
+import Nav from '../../components/Nav.astro';
+import Icon from '../../components/Icon.astro';
+import Steps from '../../components/download/Steps.astro';
+import Versions from '../../components/download/Versions.astro';
+import Footer from '../../components/Footer.astro';
+import { getLatestRelease, getReleases, LATEST_ZIP } from '../../lib/release';
+
+const releases = (await getReleases()) ?? [];
+const { version, assetName } = await getLatestRelease();
+---
+
+<Base
+  title="Download Restless for Mac"
+  description="Download Restless, the macOS menu bar app that keeps your Mac awake with the lid closed. Requires macOS 26 Tahoe or newer on Apple silicon."
+>
+  <script is:inline>
+    // Decide before the first paint which state the top of the page shows.
+    // Without JavaScript it shows "ready": a plain Download button.
+    (() => {
+      const ua = navigator.userAgent;
+      // iPadOS asks for desktop sites as a Mac; only it has a touch screen.
+      const iPad = /Macintosh/.test(ua) && navigator.maxTouchPoints > 1;
+      const mac = /Macintosh|Mac OS X/.test(ua) && !/iPhone|iPad|iPod/.test(ua) && !iPad;
+      // Arriving at the list (Releases in the footer) means picking a version.
+      const browsing = location.hash === '#all-versions';
+      document.documentElement.dataset.state = !mac ? 'other' : browsing ? 'ready' : 'downloading';
+    })();
+  </script>
+
+  <Nav home="/" download={false} />
+
+  <main id="main">
+    <section class="top wrap" aria-labelledby="download-title">
+      <p class="retry" data-when="downloading" data-load style="--d:420ms">
+        Download didn’t start? <a class="plain-link" href={LATEST_ZIP}>Try again</a>
+      </p>
+
+      <h1 id="download-title" class="head">
+        <span class="mask"
+          ><span data-line>
+            <span data-when="downloading">Restless is downloading.</span>
+            <span data-when="intel">Restless needs Apple silicon.</span>
+            <span data-when="other">Restless is a Mac app.</span>
+            <span data-when="ready">Download Restless.</span>
+          </span></span
+        >
+      </h1>
+
+      <div class="words" data-load style="--d:200ms">
+        <p class="state">
+          <span data-when="downloading">
+            Restless <span data-latest="version">{version}</span> is on its way to your Downloads folder. Three steps
+            and it’s running.
+          </span>
+          <span data-when="intel">
+            This Mac reports an Intel processor, and Restless only runs on Apple silicon. If that’s wrong, pick a version
+            below.
+          </span>
+          <span data-when="other">Open this page on your Mac to download it. Every version is listed below.</span>
+          <span data-when="ready">
+            Restless <span data-latest="version">{version}</span> for Mac, signed and notarized by Apple.
+          </span>
+        </p>
+        <p class="needs">Requires macOS 26 Tahoe or newer on a Mac with Apple silicon.</p>
+        <div class="actions">
+          <a class="button" href={LATEST_ZIP} data-when="ready">Download for Mac</a>
+          <a class="button quiet" href="#all-versions"><Icon name="arrow-down" /> All versions</a>
+        </div>
+      </div>
+    </section>
+
+    <Steps assetName={assetName} />
+    <Versions releases={releases} />
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  /* Only the parts for the current state show. Without JavaScript there's
+     no state, and the page reads as "ready". */
+  :global(html:not([data-state])) [data-when]:not([data-when='ready']),
+  :global(html[data-state='ready']) [data-when]:not([data-when='ready']),
+  :global(html[data-state='downloading']) [data-when]:not([data-when='downloading']),
+  :global(html[data-state='intel']) [data-when]:not([data-when='intel']),
+  :global(html[data-state='other']) [data-when]:not([data-when='other']) {
+    display: none;
+  }
+
+  .top {
+    padding-block: clamp(2.5rem, 7vw, 6rem) clamp(3.5rem, 7vw, 6rem);
+  }
+
+  /* "Didn't start?" sits above the headline, quiet until it's needed. */
+  .retry {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0 0.35em;
+    margin-bottom: 1.5rem;
+    padding: 0.45rem 0.85rem;
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--muted);
+    font-size: var(--step-small);
+  }
+
+  .retry a {
+    color: var(--ink);
+  }
+
+  h1 {
+    max-width: 24ch;
+  }
+
+  .mask {
+    display: block;
+    overflow: clip;
+    padding-bottom: 0.08em;
+  }
+
+  .words {
+    max-width: 40rem;
+  }
+
+  .state {
+    margin-top: 1.25rem;
+    max-width: 34ch;
+    font-size: var(--step-lead);
+    line-height: 1.3;
+    letter-spacing: -0.015em;
+  }
+
+  .needs {
+    margin-top: 0.75rem;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1.75rem;
+  }
+
+  @media (max-width: 599px) {
+    .actions .button {
+      width: 100%;
+      min-height: 52px;
+    }
+  }
+</style>
+
+<style is:global>
+  /* The All versions button glides down to the list. */
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+</style>
+
+<script>
+  import { formatDate, formatSize } from '../../lib/format';
+  import type { RestlessRelease } from '../../lib/release';
+
+  const root = document.documentElement;
+
+  // Browsers can't reliably say which chip a Mac has. Chromium can report
+  // the architecture; only a clear "x86" stops the download.
+  async function reportsIntel(): Promise<boolean> {
+    const uad = (
+      navigator as Navigator & {
+        userAgentData?: { getHighEntropyValues?(hints: string[]): Promise<{ architecture?: string }> };
+      }
+    ).userAgentData;
+    if (!uad?.getHighEntropyValues) return false;
+    try {
+      return (await uad.getHighEntropyValues(['architecture'])).architecture === 'x86';
+    } catch {
+      return false;
+    }
+  }
+
+  // The zip arrives as an attachment, so the page stays put. With ?auto, a
+  // GitHub outage answers 204 instead of sending the visitor to GitHub.
+  function startDownload() {
+    location.assign('/download/latest?auto');
+  }
+
+  async function autoDownload() {
+    if (root.dataset.state !== 'downloading') return;
+    if (await reportsIntel()) {
+      root.dataset.state = 'intel';
+      return;
+    }
+    if (document.readyState === 'complete') startDownload();
+    else addEventListener('load', startDownload, { once: true });
+  }
+
+  function fill(li: Element, field: string, apply: (el: HTMLElement) => void) {
+    li.querySelectorAll<HTMLElement>(`[data-f="${field}"]`).forEach(apply);
+  }
+
+  function row(template: HTMLTemplateElement, release: RestlessRelease, latest: boolean) {
+    const li = template.content.firstElementChild!.cloneNode(true) as HTMLLIElement;
+    li.classList.toggle('is-latest', latest);
+    fill(li, 'version', (el) => (el.textContent = release.version));
+    fill(li, 'latest', (el) => (el.hidden = !latest));
+    fill(li, 'date', (el) => {
+      el.textContent = formatDate(release.publishedAt);
+      el.setAttribute('datetime', release.publishedAt);
+    });
+    fill(li, 'size', (el) => (el.textContent = formatSize(release.size)));
+    fill(li, 'notes', (el) => el.setAttribute('href', release.notesUrl));
+    fill(li, 'url', (el) => {
+      el.setAttribute('href', release.url);
+      el.setAttribute('aria-label', `Download Restless ${release.version}`);
+      el.classList.toggle('quiet', !latest);
+    });
+    return li;
+  }
+
+  // Picks up releases published since the last deploy. If the API is down,
+  // the list from the build stays.
+  async function refreshVersions() {
+    const list = document.querySelector<HTMLOListElement>('[data-releases]');
+    const template = document.querySelector<HTMLTemplateElement>('#version-row');
+    if (!list || !template) return;
+
+    let releases: RestlessRelease[];
+    try {
+      const res = await fetch('/api/releases');
+      if (!res.ok) return;
+      ({ releases } = await res.json());
+    } catch {
+      return;
+    }
+    if (!Array.isArray(releases) || releases.length === 0) return;
+
+    const sig = releases.map((r) => `${r.version}:${r.size}`).join();
+    if (list.dataset.sig !== sig) {
+      list.replaceChildren(...releases.map((r, i) => row(template, r, i === 0)));
+      list.dataset.sig = sig;
+      document.querySelector('[data-releases-empty]')?.remove();
+    }
+
+    const latest = releases[0];
+    const values: Record<string, string> = {
+      version: latest.version,
+      assetName: latest.assetName,
+    };
+    for (const el of document.querySelectorAll<HTMLElement>('[data-latest]')) {
+      const value = values[el.dataset.latest ?? ''];
+      if (value) el.textContent = value;
+    }
+  }
+
+  autoDownload();
+  refreshVersions();
+</script>

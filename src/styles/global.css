@@ -169,6 +169,12 @@
     transform: scale(0.97);
   }
 
+  /* A second action next to the download, on the page's own surface. */
+  .button.quiet {
+    background: var(--surface);
+    color: var(--ink);
+  }
+
   .button-sm {
     min-height: 2.5rem;
     padding: 0.45rem 0.9rem;
@@ -194,6 +200,10 @@
   @media (hover: hover) and (pointer: fine) {
     .button:hover {
       background: var(--accent-strong);
+    }
+
+    .button.quiet:hover {
+      background: color-mix(in srgb, var(--ink) 8%, var(--surface));
     }
 
     .link:hover,

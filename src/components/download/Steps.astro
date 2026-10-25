@@ -1,0 +1,203 @@
+---
+// Three cards: unzip, move to Applications, open from the menu bar. The
+// pictures are drawn like the hero's, from the app's own parts.
+import EyeMark from '../EyeMark.astro';
+import Icon from '../Icon.astro';
+import Chevron from '../Chevron.astro';
+import MenuBar from '../frags/MenuBar.astro';
+import Panel from '../frags/Panel.astro';
+
+interface Props {
+  assetName: string;
+}
+const { assetName } = Astro.props;
+---
+
+<ol class="steps wrap" aria-label="Install Restless">
+  <li class="step" data-reveal style="--i:0">
+    <div class="pic" data-ui aria-hidden="true">
+      <div class="pair">
+        <figure>
+          <svg class="file" viewBox="0 0 52 64" width="52" height="64">
+            <path d="M5 1h29l17 17v41a4 4 0 0 1-4 4H5a4 4 0 0 1-4-4V5a4 4 0 0 1 4-4Z" fill="#e6e5df"></path>
+            <path d="M34 1v13a4 4 0 0 0 4 4h13Z" fill="#c4c3bc"></path>
+            <path
+              d="M24 4h4v3h-4zM28 7h4v3h-4zM24 10h4v3h-4zM28 13h4v3h-4zM24 16h4v3h-4zM28 19h4v3h-4zM24 22h4v3h-4z"
+              fill="#7d7c76"></path>
+            <rect x="23.5" y="27" width="9" height="11" rx="2" fill="none" stroke="#7d7c76" stroke-width="1.6"></rect>
+          </svg>
+          <figcaption data-latest="assetName">{assetName}</figcaption>
+        </figure>
+        <span class="to"><Icon name="arrow-right" size={20} /></span>
+        <figure>
+          <EyeMark id="step-unzipped" size={64} />
+          <figcaption>Restless</figcaption>
+        </figure>
+      </div>
+    </div>
+    <p>
+      <span class="n">1</span>Open <strong data-latest="assetName">{assetName}</strong> in your Downloads folder.
+      Safari usually unzips it for you, so Restless may already be there.
+    </p>
+  </li>
+
+  <li class="step" data-reveal style="--i:1">
+    <div class="pic" data-ui aria-hidden="true">
+      <div class="pair">
+        <figure>
+          <EyeMark id="step-drag" size={64} />
+          <figcaption>Restless</figcaption>
+        </figure>
+        <span class="to"><Icon name="arrow-right" size={20} /></span>
+        <figure>
+          <svg class="folder" viewBox="0 0 64 52" width="72" height="58">
+            <path d="M2 8a4 4 0 0 1 4-4h15.5a4 4 0 0 1 2.8 1.2L28 9h30a4 4 0 0 1 4 4v4H2Z" fill="#3d8fdb"></path>
+            <rect x="2" y="12" width="60" height="38" rx="4" fill="#5eaaee"></rect>
+            <path
+              d="M25.5 41.5 32 25l6.5 16.5M27.9 35.5h8.2"
+              fill="none"
+              stroke="#2c78c4"
+              stroke-width="2.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"></path>
+          </svg>
+          <figcaption>Applications</figcaption>
+        </figure>
+      </div>
+    </div>
+    <p>
+      <span class="n">2</span>Drag Restless into your Applications folder. It’s signed and notarized by Apple, so it
+      opens like any other app.
+    </p>
+  </li>
+
+  <li class="step" data-reveal style="--i:2">
+    <div class="pic menu" data-ui aria-hidden="true">
+      <MenuBar time="Fri 11:41 PM" battery={86} glyph="eye-slash" open />
+      <div class="panel"><Panel percent={86} sleepDisplay={false} lockScreen={false} battery={false} /></div>
+    </div>
+    <p>
+      <span class="n">3</span>Open Restless and find its eye in the menu bar. The first time you turn on Lid Closed
+      <Chevron /> Keep Awake, it offers to install its helper. Approve “Restless” once in System Settings <Chevron />
+      General <Chevron /> Login Items &amp; Extensions.
+    </p>
+  </li>
+</ol>
+
+<style>
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--gutter);
+    margin-block: 0;
+    list-style: none;
+  }
+
+  .pic {
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius);
+    background: var(--surface);
+    overflow: clip;
+  }
+
+  .pair {
+    display: flex;
+    align-items: center;
+    gap: clamp(1rem, 2.4vw, 2rem);
+  }
+
+  figure {
+    display: grid;
+    justify-items: center;
+    gap: 10px;
+    margin: 0;
+  }
+
+  /* Both sides sit on the same 64px line, whatever their shape. */
+  figure > :first-child {
+    height: 64px;
+    align-self: end;
+  }
+
+  .folder {
+    margin-top: 6px;
+  }
+
+  figcaption {
+    max-width: 9rem;
+    font-size: 12px;
+    color: var(--ui-text-2);
+    text-align: center;
+    overflow-wrap: anywhere;
+  }
+
+  .to {
+    display: grid;
+    margin-bottom: 26px;
+    color: var(--ui-text-2);
+  }
+
+  /* The menu bar runs along the top; the panel hangs under the eye. */
+  .pic.menu {
+    display: block;
+    place-items: normal;
+  }
+
+  .panel {
+    position: absolute;
+    top: 32px;
+    right: 14px;
+    transform-origin: top right;
+  }
+
+  .step p {
+    max-width: 38ch;
+    margin-top: 1.1rem;
+  }
+
+  .n {
+    margin-right: 0.5em;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  strong {
+    font-weight: 500;
+    overflow-wrap: anywhere;
+  }
+
+  @media (max-width: 1199px) {
+    .panel {
+      transform: scale(0.85);
+    }
+  }
+
+  @media (max-width: 899px) {
+    .steps {
+      grid-template-columns: minmax(0, 1fr);
+      row-gap: 2.5rem;
+    }
+
+    .pic {
+      aspect-ratio: 16 / 9;
+      max-height: 17rem;
+    }
+
+    .panel {
+      transform: none;
+    }
+  }
+
+  @media (max-width: 599px) {
+    .pic {
+      aspect-ratio: 4 / 3;
+    }
+
+    .panel {
+      transform: scale(0.85);
+    }
+  }
+</style>
