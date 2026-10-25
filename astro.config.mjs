@@ -2,16 +2,10 @@
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 
-// Absolute URLs (canonical, Open Graph) need to know where the site lives.
-// Set SITE_URL once there's a domain; on Vercel the production URL is used.
-const site =
-  process.env.SITE_URL ??
-  (process.env.VERCEL_PROJECT_PRODUCTION_URL
-    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-    : 'http://localhost:4321');
-
 export default defineConfig({
-  site,
+  // The one place the site's address lives: the canonical link and the
+  // Open Graph and Twitter image URLs are all built from it.
+  site: 'https://restless-site.vercel.app',
   devToolbar: { enabled: false },
   // Terminal fragments are <pre>; keep their line breaks exactly as written.
   compressHTML: false,

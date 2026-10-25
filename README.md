@@ -32,7 +32,13 @@ The repo deploys with no extra setup. `vercel.json` only pins the build and adds
 
 Or from the command line: `npx vercel` for a preview, `npx vercel --prod` for production.
 
-Absolute URLs for the canonical link and the Open Graph image come from `SITE_URL` if it's set, otherwise from Vercel's production URL. Once there's a domain, set `SITE_URL=https://your.domain` in the project's environment variables.
+Absolute URLs (the canonical link and the Open Graph and Twitter image) are all built from one setting, line 8 of `astro.config.mjs`:
+
+```js
+  site: 'https://restless-site.vercel.app',
+```
+
+When the site moves to its own domain, change that line and redeploy.
 
 ## Brand assets
 
