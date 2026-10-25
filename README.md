@@ -2,7 +2,7 @@
 
 Marketing site for [Restless](https://github.com/notkainoa/restless), the macOS menu bar app that keeps your Mac awake with the lid closed.
 
-It's a single static page built with [Astro](https://astro.build) and [Tailwind CSS](https://tailwindcss.com). There's no backend, no analytics and no CMS. The app's [README](https://github.com/notkainoa/restless#readme) is the source of truth for the copy.
+It's two static pages, the home page and `/download`, built with [Astro](https://astro.build) and [Tailwind CSS](https://tailwindcss.com), plus two small server routes that read GitHub releases. There's no database, no analytics and no CMS. The app's [README](https://github.com/notkainoa/restless#readme) is the source of truth for the copy.
 
 ## Run it locally
 
@@ -10,22 +10,44 @@ You need Node 22.23 or newer (Astro 7’s minimum).
 
 ```sh
 npm install
-npm run dev        # http://localhost:4321
-npm run build      # static output in ./dist
-npm run preview    # serve ./dist
+npm run dev        # http://localhost:4321, server routes included
+npm run build      # Vercel build output in ./.vercel/output
 ```
 
-## The version number
+`npm run dev` runs the server routes too. To run the production build the way Vercel does, use `npx vercel dev`.
 
-At build time `src/lib/release.ts` reads the latest release from the GitHub Releases API (`/repos/notkainoa/restless/releases/latest`) and fills in the version, the asset name (`Restless-<version>.zip`) and the release notes link. If the request fails (offline, rate limit, bad response), the build logs a warning and falls back to `1.0.0`. The Download buttons always point at <https://github.com/notkainoa/restless/releases/latest>, so they're never stale even when the version label is.
+## Downloads and releases
 
-Set `GITHUB_TOKEN` in the build environment if anonymous API limits become a problem on shared CI.
+Publishing a release with `./release.sh <version>` in the app repo is the only step. The site picks up the new version on its own, and visitors download the zip without ever landing on a GitHub page.
 
-Since the version is baked in at build time, publish a new app release and then redeploy the site. To automate that, create a [Vercel Deploy Hook](https://vercel.com/docs/deploy-hooks) and call it at the end of the app's `release.sh`, for example `curl -X POST "$VERCEL_DEPLOY_HOOK"`.
+- **`/download`** is the download page. On a Mac it starts the download right away, then shows how to install, a "Download didn't start? Try again" link and every version. It doesn't download on iPhone, iPad, Android, Windows or Linux, or when Chrome reports an Intel Mac. Every Download button on the site points here.
+- **`/download/latest`** looks up the newest release and redirects to its `Restless-<version>.zip`. The zip comes back as an attachment, so the browser downloads it and stays on the page.
+- **`/api/releases`** returns every release as JSON for the All versions list.
+
+Only releases with a `Restless-<version>.zip` asset count, so the pre-rename Amped release is never offered. Drafts and prereleases are skipped too. `src/lib/release.ts` does the lookup for both routes and for the build.
+
+### Why a server route
+
+The zip's name changes with every version, so a static link can't point straight at it, and GitHub's `releases/latest` link opens a GitHub page instead of the file. A tiny function that asks the GitHub Releases API for the newest zip and redirects to it keeps the page static and needs no redeploy after a release.
+
+The two routes are the only code that runs on request. They opt out of prerendering (`export const prerender = false`) and the Vercel adapter turns them into a function. Every page is still prerendered.
+
+### Caching and GitHub's rate limit
+
+Both routes send `s-maxage=300, stale-while-revalidate=86400, stale-if-error=86400`, so Vercel's CDN answers almost every request, and each function instance asks GitHub at most once every five minutes. A new release shows up within about five minutes. That keeps the routes well inside GitHub's anonymous limit of 60 requests an hour, so they work without a token.
+
+**Optional:** set `GITHUB_TOKEN` in the Vercel project's environment variables (Production and Preview) to raise the limit to 5,000 requests an hour. A fine-grained token with read-only access to public repositories is enough. The build uses it too.
+
+### When GitHub is down
+
+- Each function instance keeps the last list it fetched and uses that if GitHub stops answering.
+- With nothing to fall back on, `/download/latest` redirects to <https://github.com/notkainoa/restless/releases/latest>, so a download never fails outright. The page's automatic download asks with `?auto` and gets an empty `204` instead, which leaves the visitor on the page with the Try again link.
+- The All versions list is rendered at build time and then refreshed from `/api/releases`. If the API fails, the list from the build stays.
+- The home page's version label is also read at build time, and falls back to `1.0.0` if GitHub can't be reached.
 
 ## Deploy to Vercel
 
-The repo deploys with no extra setup. `vercel.json` only pins the build and adds long-lived caching for hashed assets.
+The repo deploys with no extra setup. Astro's Vercel adapter writes the build output, and `vercel.json` only pins the build command and adds long-lived caching for hashed assets. `GITHUB_TOKEN` is optional (see above).
 
 1. On [vercel.com/new](https://vercel.com/new), import `notkainoa/restless-site`. Vercel detects Astro.
 2. Deploy. That's it.
@@ -52,7 +74,7 @@ That regenerates `favicon.svg`, `favicon.ico`, `apple-touch-icon.png` and the 12
 
 ## Design
 
-Four parts, nothing else: the hero ("Lid shut." / "Still running." either side of the Restless panel at 11:41 pm), the five settings as sentences with working switches, one paragraph on approving the helper, and the download. Dark only, one typeface (Hanken Grotesk, self-hosted), a green-black and bone palette with one accent on the download action; the violet app icon is the only purple. The look came out of a pass with [tasteskill v2](https://www.tasteskill.dev/) and was then cut back to the essentials.
+The home page has four parts, nothing else: the hero ("Lid shut." / "Still running." either side of the Restless panel at 11:41 pm), the five settings as sentences with working switches, one paragraph on approving the helper, and the download. Dark only, one typeface (Hanken Grotesk, self-hosted), a green-black and bone palette with one accent on the download action; the violet app icon is the only purple. The look came out of a pass with [tasteskill v2](https://www.tasteskill.dev/) and was then cut back to the essentials.
 
 The panel, menu bar and Terminal in the hero are built in HTML from the app's own strings (`src/components/frags/`, styled by `src/styles/ui.css` under `[data-ui]`). The Terminal output is sample content.
 
@@ -62,15 +84,22 @@ The share image (`og.png`) uses *Moon, New York, March 8, 1865* by Lewis Morris 
 
 ```
 src/
-  pages/index.astro        the page
+  pages/
+    index.astro            the home page
+    download/index.astro   the download page
+    download/latest.ts     redirect to the newest zip (server route)
+    api/releases.ts        every release as JSON (server route)
   components/
+    Nav.astro              the top bar
     Hero.astro             headline, the panel frame, the download
     Switches.astro         five settings as sentences with switches
     Approve.astro          the helper, in one paragraph
     Closing.astro          download and the facts that make it safe
     Footer.astro, EyeMark.astro, Icon.astro, Chevron.astro
     frags/                 panel, menu bar, Terminal
-  lib/release.ts           build-time GitHub release lookup with fallback
+    download/              install steps, version list and row
+  lib/release.ts           GitHub release lookup, filtering and fallbacks
+  lib/format.ts            dates and file sizes, shared with the browser
   styles/global.css        tokens, type, buttons, entrances
   styles/ui.css            fragment styles, scoped to [data-ui]
 scripts/generate-assets.mjs  favicon, touch icon and OG image
@@ -78,7 +107,7 @@ scripts/generate-assets.mjs  favicon, touch icon and OG image
 
 ## Motion and accessibility
 
-The headline rises in on load and each section's parts arrive once as you scroll; the switches answer clicks, Space and Enter. With `prefers-reduced-motion` entrances become plain fades. Everything renders without JavaScript.
+The headline rises in on load and each section's parts arrive once as you scroll; the switches answer clicks, Space and Enter. On `/download` the All versions button glides down to the list. With `prefers-reduced-motion` entrances become plain fades and the jump is instant. Everything renders without JavaScript; without it, `/download` shows a plain Download button instead of starting the download.
 
 ## Credits
 
