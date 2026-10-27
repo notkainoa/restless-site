@@ -1,6 +1,6 @@
 ---
 // "A single quiet line", plus the credits it owes.
-import { DOWNLOAD_PAGE, REPO_URL } from '../lib/release';
+import { REPO_URL, VERSIONS_PAGE } from '../lib/release';
 ---
 
 <footer class="footer wrap">
@@ -8,7 +8,7 @@ import { DOWNLOAD_PAGE, REPO_URL } from '../lib/release';
     <p class="what">Restless, a menu bar app for macOS</p>
     <nav aria-label="Project" class="links">
       <a class="plain-link" href={REPO_URL}>GitHub</a>
-      <a class="plain-link" href={`${DOWNLOAD_PAGE}#all-versions`}>Releases</a>
+      <a class="plain-link" href={VERSIONS_PAGE}>Releases</a>
       <a class="plain-link" href={`${REPO_URL}/blob/main/LICENSE`}>License</a>
     </nav>
     <p class="who">© 2026 Kainoa Newton</p>

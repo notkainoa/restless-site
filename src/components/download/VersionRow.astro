@@ -1,8 +1,9 @@
 ---
 // One release in the All versions list. Rendered at build time for each
 // release, and once empty inside a <template> so the page can rebuild the
-// list from /api/releases. The script fills the [data-f] fields.
-import type { RestlessRelease } from '../../lib/release';
+// list from /api/releases. The script fills the [data-f] fields. Download
+// opens the download page for that version, which starts it.
+import { downloadPageFor, type RestlessRelease } from '../../lib/release';
 import { formatDate, formatSize } from '../../lib/format';
 
 interface Props {
@@ -27,7 +28,7 @@ const { release, latest = false } = Astro.props;
     <a
       class:list={['button', 'button-sm', 'get', { quiet: !latest }]}
       data-f="url"
-      href={release?.url}
+      href={release && downloadPageFor(release.version, latest)}
       aria-label={release && `Download Restless ${release.version}`}>Download</a
     >
   </div>
