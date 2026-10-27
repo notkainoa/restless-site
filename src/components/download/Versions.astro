@@ -1,20 +1,24 @@
 ---
 // Every Restless release, newest first. The list is rendered at build time
 // and refreshed from /api/releases, so a release published after the last
-// deploy still shows up.
+// deploy still shows up. On /download it follows the install steps; on
+// /downloads it's the whole page.
 import VersionRow from './VersionRow.astro';
 import { RELEASES_URL, type RestlessRelease } from '../../lib/release';
 
 interface Props {
   releases: RestlessRelease[];
+  /** The list is the page (/downloads): its heading is the h1. */
+  page?: boolean;
 }
-const { releases } = Astro.props;
+const { releases, page = false } = Astro.props;
 const sig = releases.map((r) => `${r.version}:${r.size}`).join();
+const Heading = page ? 'h1' : 'h2';
 ---
 
-<section id="all-versions" class="versions" aria-labelledby="versions-title">
+<section id="all-versions" class:list={['versions', { page }]} aria-labelledby="versions-title">
   <div class="vhead wrap">
-    <h2 id="versions-title" class="head" data-reveal>All versions</h2>
+    <Heading id="versions-title" class="head" data-reveal>All versions</Heading>
     <p class="needs" data-reveal style="--i:1">
       Every version needs macOS 26 Tahoe or newer on a Mac with Apple silicon. Once installed, Restless updates
       itself.
@@ -55,7 +59,13 @@ const sig = releases.map((r) => `${r.version}:${r.size}`).join();
     align-items: end;
   }
 
-  h2 {
+  /* Alone on /downloads, it starts where the download page's headline does. */
+  .versions.page {
+    margin-top: 0;
+    padding-top: clamp(2.5rem, 7vw, 6rem);
+  }
+
+  .head {
     grid-column: 1 / span 5;
   }
 
@@ -91,3 +101,52 @@ const sig = releases.map((r) => `${r.version}:${r.size}`).join();
     }
   }
 </style>
+
+<script>
+  import { formatDate, formatSize } from '../../lib/format';
+  import { downloadPageFor, type RestlessRelease } from '../../lib/release';
+  import { loadReleases } from '../../lib/releases-client';
+
+  function fill(li: Element, field: string, apply: (el: HTMLElement) => void) {
+    li.querySelectorAll<HTMLElement>(`[data-f="${field}"]`).forEach(apply);
+  }
+
+  function row(template: HTMLTemplateElement, release: RestlessRelease, latest: boolean) {
+    const li = template.content.firstElementChild!.cloneNode(true) as HTMLLIElement;
+    li.classList.toggle('is-latest', latest);
+    fill(li, 'version', (el) => (el.textContent = release.version));
+    fill(li, 'latest', (el) => (el.hidden = !latest));
+    fill(li, 'date', (el) => {
+      el.textContent = formatDate(release.publishedAt);
+      el.setAttribute('datetime', release.publishedAt);
+    });
+    fill(li, 'size', (el) => (el.textContent = formatSize(release.size)));
+    fill(li, 'notes', (el) => el.setAttribute('href', release.notesUrl));
+    fill(li, 'url', (el) => {
+      el.setAttribute('href', downloadPageFor(release.version, latest));
+      el.setAttribute('aria-label', `Download Restless ${release.version}`);
+      el.classList.toggle('quiet', !latest);
+    });
+    return li;
+  }
+
+  // Picks up releases published since the last deploy. If the API is down,
+  // the list from the build stays.
+  async function refreshVersions() {
+    const list = document.querySelector<HTMLOListElement>('[data-releases]');
+    const template = document.querySelector<HTMLTemplateElement>('#version-row');
+    if (!list || !template) return;
+
+    const releases = await loadReleases();
+    if (!releases) return;
+
+    const sig = releases.map((r) => `${r.version}:${r.size}`).join();
+    if (list.dataset.sig !== sig) {
+      list.replaceChildren(...releases.map((r, i) => row(template, r, i === 0)));
+      list.dataset.sig = sig;
+      document.querySelector('[data-releases-empty]')?.remove();
+    }
+  }
+
+  refreshVersions();
+</script>

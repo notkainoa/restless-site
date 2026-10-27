@@ -1,7 +1,8 @@
 ---
 // /download: starts the download on a Mac, then shows how to install, a
-// retry, and every version. Prerendered like the rest of the site; the
-// download itself goes through /download/latest.
+// retry, and every version. /download?version=1.2.0 does the same for one
+// version. Prerendered like the rest of the site; the download itself goes
+// through /download/latest (or /download/1.2.0).
 import Base from '../../layouts/Base.astro';
 import '../../styles/download.css';
 import Nav from '../../components/Nav.astro';
@@ -38,7 +39,7 @@ const { version, assetName } = await getLatestRelease();
   <main id="main">
     <section class="top wrap" aria-labelledby="download-title">
       <p class="retry" data-when="downloading" data-load style="--d:420ms">
-        Download didn’t start? <a class="plain-link" href={LATEST_ZIP}>Try again</a>
+        Download didn’t start? <a class="plain-link" href={LATEST_ZIP} data-zip>Try again</a>
       </p>
 
       <h1 id="download-title" class="head">
@@ -48,6 +49,7 @@ const { version, assetName } = await getLatestRelease();
             <span data-when="intel">Restless needs Apple silicon.</span>
             <span data-when="other">Restless is a Mac app.</span>
             <span data-when="ready">Download Restless.</span>
+            <span data-when="missing">There’s no such version.</span>
           </span></span
         >
       </h1>
@@ -66,10 +68,13 @@ const { version, assetName } = await getLatestRelease();
           <span data-when="ready">
             Restless <span data-latest="version">{version}</span> for Mac, signed and notarized by Apple.
           </span>
+          <span data-when="missing">
+            Restless <span data-latest="version">{version}</span> was never released. Pick a version below.
+          </span>
         </p>
         <p class="needs">Requires macOS 26 Tahoe or newer on a Mac with Apple silicon.</p>
         <div class="actions">
-          <a class="button" href={LATEST_ZIP} data-when="ready">Download for Mac</a>
+          <a class="button" href={LATEST_ZIP} data-zip data-when="ready">Download for Mac</a>
           <a class="button quiet" href="#all-versions"><Icon name="arrow-down" /> All versions</a>
         </div>
       </div>
@@ -88,7 +93,13 @@ const { version, assetName } = await getLatestRelease();
   :global(html[data-state='ready']) [data-when]:not([data-when='ready']),
   :global(html[data-state='downloading']) [data-when]:not([data-when='downloading']),
   :global(html[data-state='intel']) [data-when]:not([data-when='intel']),
-  :global(html[data-state='other']) [data-when]:not([data-when='other']) {
+  :global(html[data-state='other']) [data-when]:not([data-when='other']),
+  :global(html[data-state='missing']) [data-when]:not([data-when='missing']) {
+    display: none;
+  }
+
+  /* No install steps for a version that doesn't exist. */
+  :global(html[data-state='missing'] .steps) {
     display: none;
   }
 
@@ -165,10 +176,26 @@ const { version, assetName } = await getLatestRelease();
 </style>
 
 <script>
-  import { formatDate, formatSize } from '../../lib/format';
-  import type { RestlessRelease } from '../../lib/release';
+  import { LATEST_ZIP, VERSION, zipFor } from '../../lib/release';
+  import { loadReleases } from '../../lib/releases-client';
 
   const root = document.documentElement;
+
+  // A version picked from the list (/download?version=1.2.0, or v1.2.0 the
+  // way the tags read). No ?version means the newest; one that isn't a
+  // version at all can't be downloaded.
+  const wanted = new URLSearchParams(location.search).get('version')?.trim().replace(/^v/i, '') || null;
+  const chosen = wanted && VERSION.test(wanted) ? wanted : null;
+  const malformed = wanted !== null && !chosen;
+  const zip = chosen ? zipFor(chosen) : LATEST_ZIP;
+
+  function show(version: string) {
+    const values: Record<string, string> = { version, assetName: `Restless-${version}.zip` };
+    for (const el of document.querySelectorAll<HTMLElement>('[data-latest]')) {
+      const value = values[el.dataset.latest ?? ''];
+      if (value) el.textContent = value;
+    }
+  }
 
   // Browsers can't reliably say which chip a Mac has. Chromium can report
   // the architecture; only a clear "x86" stops the download.
@@ -186,14 +213,27 @@ const { version, assetName } = await getLatestRelease();
     }
   }
 
+  // The list from the build answers for most versions without a request. If
+  // the API is down, give the version the benefit of the doubt.
+  async function released(version: string): Promise<boolean> {
+    const built = document.querySelectorAll('[data-releases] [data-f="version"]');
+    if ([...built].some((el) => el.textContent?.trim() === version)) return true;
+    const releases = await loadReleases();
+    return !releases || releases.some((r) => r.version === version);
+  }
+
   // The zip arrives as an attachment, so the page stays put. With ?auto, a
   // GitHub outage answers 204 instead of sending the visitor to GitHub.
   function startDownload() {
-    location.assign('/download/latest?auto');
+    location.assign(`${zip}?auto`);
   }
 
   async function autoDownload() {
     if (root.dataset.state !== 'downloading') return;
+    if (malformed || (chosen && !(await released(chosen)))) {
+      root.dataset.state = 'missing';
+      return;
+    }
     if (await reportsIntel()) {
       root.dataset.state = 'intel';
       return;
@@ -202,64 +242,13 @@ const { version, assetName } = await getLatestRelease();
     else addEventListener('load', startDownload, { once: true });
   }
 
-  function fill(li: Element, field: string, apply: (el: HTMLElement) => void) {
-    li.querySelectorAll<HTMLElement>(`[data-f="${field}"]`).forEach(apply);
-  }
-
-  function row(template: HTMLTemplateElement, release: RestlessRelease, latest: boolean) {
-    const li = template.content.firstElementChild!.cloneNode(true) as HTMLLIElement;
-    li.classList.toggle('is-latest', latest);
-    fill(li, 'version', (el) => (el.textContent = release.version));
-    fill(li, 'latest', (el) => (el.hidden = !latest));
-    fill(li, 'date', (el) => {
-      el.textContent = formatDate(release.publishedAt);
-      el.setAttribute('datetime', release.publishedAt);
-    });
-    fill(li, 'size', (el) => (el.textContent = formatSize(release.size)));
-    fill(li, 'notes', (el) => el.setAttribute('href', release.notesUrl));
-    fill(li, 'url', (el) => {
-      el.setAttribute('href', release.url);
-      el.setAttribute('aria-label', `Download Restless ${release.version}`);
-      el.classList.toggle('quiet', !latest);
-    });
-    return li;
-  }
-
-  // Picks up releases published since the last deploy. If the API is down,
-  // the list from the build stays.
-  async function refreshVersions() {
-    const list = document.querySelector<HTMLOListElement>('[data-releases]');
-    const template = document.querySelector<HTMLTemplateElement>('#version-row');
-    if (!list || !template) return;
-
-    let releases: RestlessRelease[];
-    try {
-      const res = await fetch('/api/releases');
-      if (!res.ok) return;
-      ({ releases } = await res.json());
-    } catch {
-      return;
-    }
-    if (!Array.isArray(releases) || releases.length === 0) return;
-
-    const sig = releases.map((r) => `${r.version}:${r.size}`).join();
-    if (list.dataset.sig !== sig) {
-      list.replaceChildren(...releases.map((r, i) => row(template, r, i === 0)));
-      list.dataset.sig = sig;
-      document.querySelector('[data-releases-empty]')?.remove();
-    }
-
-    const latest = releases[0];
-    const values: Record<string, string> = {
-      version: latest.version,
-      assetName: latest.assetName,
-    };
-    for (const el of document.querySelectorAll<HTMLElement>('[data-latest]')) {
-      const value = values[el.dataset.latest ?? ''];
-      if (value) el.textContent = value;
-    }
+  if (wanted) {
+    show(chosen ?? wanted.slice(0, 16));
+    for (const a of document.querySelectorAll<HTMLAnchorElement>('[data-zip]')) a.href = zip;
+  } else {
+    // A release published since the last deploy is the one that downloads.
+    loadReleases().then((releases) => releases && show(releases[0].version));
   }
 
   autoDownload();
-  refreshVersions();
 </script>

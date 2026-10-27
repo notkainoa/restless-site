@@ -1,0 +1,25 @@
+---
+// /downloads: every version, and nothing starts downloading. Picking one
+// opens /download?version=<version>, which downloads it and shows how to
+// install.
+import Base from '../layouts/Base.astro';
+import '../styles/download.css';
+import Nav from '../components/Nav.astro';
+import Versions from '../components/download/Versions.astro';
+import Footer from '../components/Footer.astro';
+import { getReleases } from '../lib/release';
+
+const releases = (await getReleases()) ?? [];
+---
+
+<Base
+  title="All versions of Restless"
+  description="Every release of Restless, the macOS menu bar app that keeps your Mac awake with the lid closed. Requires macOS 26 Tahoe or newer on Apple silicon."
+>
+  <Nav home="/" />
+
+  <main id="main">
+    <Versions releases={releases} page />
+  </main>
+  <Footer />
+</Base>

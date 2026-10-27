@@ -13,8 +13,23 @@ export const RELEASES_URL = `${REPO_URL}/releases`;
 
 /** The download page. Every Download button on the site points here. */
 export const DOWNLOAD_PAGE = '/download';
+/** Every version, without starting a download. */
+export const VERSIONS_PAGE = '/downloads';
 /** Redirects to the newest Restless zip on GitHub. */
 export const LATEST_ZIP = '/download/latest';
+
+/** A version as it appears in URLs: `1.2.0`. */
+export const VERSION = /^\d+\.\d+\.\d+$/;
+
+/** Redirects to one version's zip on GitHub. */
+export function zipFor(version: string): string {
+  return `${DOWNLOAD_PAGE}/${version}`;
+}
+
+/** The download page, downloading one version. The newest gets the plain /download. */
+export function downloadPageFor(version: string, latest: boolean): string {
+  return latest ? DOWNLOAD_PAGE : `${DOWNLOAD_PAGE}?version=${version}`;
+}
 
 const FALLBACK_VERSION = '1.0.0';
 const ASSET = /^Restless-(\d+)\.(\d+)\.(\d+)\.zip$/;

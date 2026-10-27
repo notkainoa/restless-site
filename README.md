@@ -2,7 +2,7 @@
 
 Marketing site for [Restless](https://github.com/notkainoa/restless), the macOS menu bar app that keeps your Mac awake with the lid closed.
 
-It's two static pages, the home page and `/download`, built with [Astro](https://astro.build) and [Tailwind CSS](https://tailwindcss.com), plus two small server routes that read GitHub releases. There's no database, no analytics and no CMS. The app's [README](https://github.com/notkainoa/restless#readme) is the source of truth for the copy.
+It's three static pages, the home page, `/download` and `/downloads`, built with [Astro](https://astro.build) and [Tailwind CSS](https://tailwindcss.com), plus two small server routes that read GitHub releases. There's no database, no analytics and no CMS. The app's [README](https://github.com/notkainoa/restless#readme) is the source of truth for the copy.
 
 ## Run it locally
 
@@ -21,7 +21,9 @@ npm run build      # Vercel build output in ./.vercel/output
 Publishing a release with `./release.sh <version>` in the app repo is the only step. The site picks up the new version on its own, and visitors download the zip without ever landing on a GitHub page.
 
 - **`/download`** is the download page. On a Mac it starts the download right away, then shows how to install, a "Download didn't start? Try again" link and every version. It doesn't download on iPhone, iPad, Android, Windows or Linux, or when Chrome reports an Intel Mac. Every Download button on the site points here.
-- **`/download/latest`** looks up the newest release and redirects to its `Restless-<version>.zip`. The zip comes back as an attachment, so the browser downloads it and stays on the page.
+- **`/download?version=1.2.0`** (or `v1.2.0`) is the same page for one version: it downloads that version and names its zip in the steps. A version that was never released gets "There's no such version" and the list instead.
+- **`/downloads`** is just the All versions list (the footer's Releases link). Nothing downloads there. Each version's Download button opens `/download?version=<version>` (the newest opens plain `/download`).
+- **`/download/latest`** looks up the newest release and redirects to its `Restless-<version>.zip`, and **`/download/<version>`** (like `/download/1.2.0`) does the same for one version. The zip comes back as an attachment, so the browser downloads it and stays on the page.
 - **`/api/releases`** returns every release as JSON for the All versions list.
 
 Only releases with a `Restless-<version>.zip` asset count, so the pre-rename Amped release is never offered. Drafts and prereleases are skipped too. `src/lib/release.ts` does the lookup for both routes and for the build.
@@ -86,8 +88,9 @@ The share image (`og.png`) uses *Moon, New York, March 8, 1865* by Lewis Morris 
 src/
   pages/
     index.astro            the home page
+    downloads.astro        every version, no download
     download/index.astro   the download page
-    download/latest.ts     redirect to the newest zip (server route)
+    download/[version].ts  redirect to the newest (latest) or one version's zip (server route)
     api/releases.ts        every release as JSON (server route)
   components/
     Nav.astro              the top bar
